@@ -1,0 +1,66 @@
+﻿@model List<QC>
+@{
+    ViewBag.Title = "Danh sách QC";
+}
+
+<h2>Danh sách QC</h2>
+<div class="row">
+@Ajax.ActionLink("Thêm", "_Create", null, new AjaxOptions
+{
+    UpdateTargetId = "qcmodal-content",
+    HttpMethod = "Get",
+    InsertionMode = InsertionMode.Replace
+
+}, new { @class = "btn btn-default" , data_toggle = "modal", data_target = "#qcmodal" })
+</div>
+<div class="row table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Loại</th>
+                <th>Mã</th>
+                <th>Nhà cùng cấp</th>
+                <th>Ẩn/Hiện</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="qc-list">
+            @foreach (var qc in Model)
+            {
+                @Html.Partial("_Details", qc)
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal fade" id="qcmodal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="qcmodal-content">
+            
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+@section Scripts
+{
+    <script>
+        function closeModal() {
+            $('#qcmodal').modal('hide');
+        }
+        function removeQC(data)
+        {
+            if (data.success == true) {
+                $("#qc-" + data.id).remove();
+            }
+        }
+        $(function ()
+        {
+            $('#qcmodal').on('hidden.bs.modal', function (e) {
+                $('#qcmodal-content').empty();
+            })
+        })
+        
+    </script>
+}

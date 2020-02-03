@@ -1,0 +1,30 @@
+﻿@model QC
+
+@using (Ajax.BeginForm("_Delete", new AjaxOptions
+{
+    HttpMethod = "Post",
+    OnSuccess = "removeQC",
+    OnComplete = "closeModal"
+
+}))
+{
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Xóa QC</h4>
+</div>
+<div class="modal-body">
+    Bạn có muốn xóa QC "@Model.Name"
+    @if (Model.QCTeams.Count > 0)
+    {
+    <div class="alert alert-danger">
+        <i class="fa fa-times-circle fa-fw fa-lg"></i>
+        <strong>Cảnh báo!</strong> Xóa QC này sẽ xóa các dữ liệu liên quan. Bạn có thực sự muốn xóa?
+    </div>
+    }
+</div>
+<div class="modal-footer">
+    @Html.HiddenFor(model => model.Id)
+    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+    <button type="submit" class="btn btn-primary">Xóa</button>
+</div>
+}

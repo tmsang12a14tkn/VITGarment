@@ -1,0 +1,47 @@
+﻿<ons-page ng-controller="TeamEmployeeChartController">
+    <ons-toolbar>
+        <div class="left">
+            <ons-toolbar-button>
+                <ons-icon icon="fa-angle-left" style="font-size: 32px; width: 1em" ng-click="goTo(-1);">
+            </ons-toolbar-button>
+        </div>
+        <div class="center"><b>{{team.Name}}</b></div>
+        <div class="right">
+            <ons-toolbar-button>
+                <ons-icon icon="fa-angle-right" style="font-size: 32px; width: 1em" ng-click="goTo(1)">
+            </ons-toolbar-button>
+        </div>
+    </ons-toolbar>
+    <div class="navigation-bar sub-nav">
+        <div class="navigation-bar__center">
+            Chu kỳ 30 ngày
+        </div>
+    </div>
+    <div style="height: calc(100% - 44px)" ng-if="employeedata" employeedata="employeedata" employeechart></div>
+
+    <ons-bottom-toolbar>
+        <div class="navigation-bar__left"><ons-back-button>Trở lại</ons-back-button></div>
+        <div class="navigation-bar__title navigation-bar__center" onclick="modal.toggle('modal')">Menu</div>
+        <div class="navigation-bar__right">
+            <ons-toolbar-button>
+                <ons-icon icon="ion-gear-a" style="font-size: 18px; width: 1em"></ons-icon>
+            </ons-toolbar-button>
+        </div>
+    </ons-bottom-toolbar>
+    <ons-modal var="modal">
+        <ons-list>
+            <ons-list-item class="has-sub" ng-click="goToTeamOverview()">Báo cáo ngày</ons-list-item>
+            <ons-list-item class="sub-menu">
+                <ons-list>
+                    <ons-list-item ng-click="goToTeamOverview()">Tổng quan</ons-list-item>
+                    <ons-list-item ng-click="goToHoursChart()">Chi tiết sản xuất theo giờ</ons-list-item>
+                </ons-list>
+            </ons-list-item>
+            <ons-list-item ng-click="goToTeamErrorChart2()">Biểu đồ sự cố</ons-list-item>
+            <ons-list-item ng-click="goToTeamErrorChart()">Biểu đồ sự cố chi tiết</ons-list-item>
+            <ons-list-item class="active" ng-click="goToTeamEmployeeChart()">Biểu đồ nhân sự</ons-list-item>
+            <ons-list-item>Biểu đồ sản xuất</ons-list-item>
+        </ons-list>
+
+    </ons-modal>
+</ons-page>

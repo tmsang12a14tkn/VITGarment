@@ -1,0 +1,39 @@
+﻿@model QC
+
+@using (Ajax.BeginForm("_Create", new AjaxOptions
+{
+    HttpMethod = "Post",
+    InsertionMode = InsertionMode.InsertAfter,
+    UpdateTargetId = "qc-list",
+    OnSuccess = "closeModal"
+
+}))
+{
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Thêm QC</h4>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label for="qc-name">Tên</label>
+            <input type="text" class="form-control" id="qc-name" name="Name" placeholder="Tên">
+        </div>
+        <div class="form-group">
+            <label for="qc-type">Loại</label>
+            <input type="text" class="form-control" id="qc-type" name="Type" placeholder="Loại">
+        </div>
+        <div class="form-group">
+            <label for="qc-code">Mã</label>
+            <input type="text" class="form-control" id="qc-code" name="Code" placeholder="Mã">
+        </div>
+        <div class="form-group">
+            <label for="qc-supplier">Nhà cung cấp</label>
+            <input type="text" class="form-control" id="qc-supplier" name="Supplier" placeholder="Nhà cung cấp">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </div>
+}
+

@@ -1,0 +1,521 @@
+﻿@model int
+@{
+    //ViewBag.Title = Model.Name + " - VITGarment";
+    DateTime dDate = (DateTime)ViewBag.date;
+    string date = dDate.ToString("dd/MM/yyyy");
+    string predate = dDate.AddDays(-1).ToString("dd/MM/yyyy");
+    string nextdate = dDate.AddDays(1).ToString("dd/MM/yyyy");
+    int iscurrentdate = dDate.Date.CompareTo(DateTime.Now.Date);
+}
+<div class="row goal-manage" ng-app="garmentApp" ng-controller="goalscontroller">
+
+    <div class="col-lg-3" style="background: white; padding-left: 0; padding-right: 0">
+        <div class="main-box clearfix">
+            @*<header class="main-box-header clearfix"></header>*@
+            <div class="main-box-body clearfix">
+                <div class="icon-box" style="position: absolute;left: 10px;top: 10px;">
+                    <a href="/Factories/Edit/{{factoryId}}" class="btn pull-left bg-primary">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                </div>
+                <img ng-src="{{factoryPicture}}" class="img-responsive" />
+            </div>
+        </div>
+
+        <div class="main-box small-xn-box">
+            <div class="row">
+                <div class="icon-box pull-left">
+                    <a href="/Factories/Details?id={{factoryId}}&date={{predate}}" class="btn">
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                </div>
+                <span class="datefactory" id="btndatepicker">
+                    <input type="text" style="opacity:0; width: 0; position: absolute; left: calc(50% - 121px);" name="datepicker" id="datepicker" />
+                    <a href="#">
+                        <span class="fa fa-calendar"></span>
+                    </a>
+                    <b ng-bind-html="dayofweek"></b> {{date}}
+                </span>
+                <div class="icon-box pull-right" ng-show="{{iscurrentdate >= 0 ? false : true}}">
+                    <a href="/Factories/Details?id={{factoryId}}&date={{nextdate}}" class="btn">
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </div>
+
+
+            </div>
+            <div class="row name">
+                <div class="icon-box pull-left">
+                    <a href="/Factories/Details?id={{preFactoryId}}&date={{date}}" class="btn">
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                </div>
+                <span class="name">{{factoryName}}</span>
+                <div class="icon-box pull-right">
+                    <a href="/Factories/Details?id={{nextFactoryId}}&date={{date}}" class="btn">
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+            @*<span class="name">@Model.Name</span>*@
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body produce-box clearfix">
+                <h1 class="headerquantity"><b>THỰC TẾ / MỤC TIÊU</b></h1>
+                @*<h1 class="sub-header"></h1>*@
+                <b class="value">{{TotalQuantityProduct}} / {{TotalQuantity}}</b>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6" style="padding-right:1.5px;">
+                <div class="main-box clearfix">
+                    <div class="main-box-body produce-box clearfix">
+                        <div class="header"><b>TIẾN ĐỘ</b></div>
+                        <div class="content">{{PercentProcess}}%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" style="padding-left:1.5px;">
+                <div class=" main-box clearfix">
+                    <div class="main-box-body produce-box clearfix">
+                        <div class="header"><b>THỜI GIAN CÒN LẠI</b></div>
+                        <div class="content">{{teams[0].TimeLeft}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6" style="padding-right:1.5px;">
+                <div class="main-box clearfix">
+                    <div class="main-box-body produce-box clearfix">
+                        <div class="header"><b>TỔ MAY</b></div>
+                        <div class="content">{{TeamCount}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" style="padding-left:1.5px;">
+                <div class="main-box clearfix">
+                    <div class="main-box-body produce-box clearfix">
+                        <div class="header"><b>CÔNG NHÂN</b></div>
+                        <div class="content">{{TotalNoEmployeeAvailable}} / {{TotalNoEmployeeDefault}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Request.IsAuthenticated)
+        {
+        <div class="main-box clearfix">
+            <div class="main-box-body clearfix text-center" style="margin:10px">
+                <span class="">
+                    <a class="btn btn-primary" href="/Goals/FactoryCreate?factoryId={{factoryId}}" target="_blank" title="Màn hình nhập của xí nghiệp"><i class="fa fa-pencil"></i> Màn hình nhập xí nghiệp</a>
+                </span>
+                <span class="">
+                    <a class="btn btn-primary" href="/QCReport/FactoryCreate?factoryId={{factoryId}}" target="_blank" title="Màn hình nhập QC"><i class="fa fa-pencil"></i> Màn hình nhập QC</a>
+                </span>
+            </div>
+        </div>
+        }
+    </div>
+
+
+    <div class="col-lg-9">
+        <div class="main-box clearfix">
+            @*<header class="main-box-header clearfix"></header>*@
+            <div class="main-box-body clearfix" ng-repeat="team in teams">
+                <div class="main-box small-tm-box">
+                    <div class="clearfix">
+                        <div class="col-md-3" style="padding-left: 0;">
+                            <div class="main-box small-xn-box box-name">
+                                <a href="/Teams/Details/{{team.TeamId}}" target="_blank"><span class="name">{{team.TeamName}}</span></a>
+                            </div>
+                            <div class="main-box">
+                                <div class="main-box-body produce-box clearfix">
+                                    <h2 class=""><b>SỐ CÔNG NHÂN</b></h2>
+                                </div>
+                                <h1 class="text-center valueproduct"><b>{{team.CurrentNoEmployee}} / {{team.TotalEmployee}}</b></h1>
+
+                                <div class="main-box-body produce-box clearfix">
+                                    <h2 class=""><b>MÃ HÀNG</b></h2>
+                                </div>
+
+                                <ul class="list-unstyled">
+                                    <li ng-repeat="productId in team.CurrentProductIds" style="word-wrap: break-word;padding:5px">
+                                        <h1 class="text-center valueproduct"><b>{{productId}}</b></h1>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="row goal-button">
+                                <a class="btn btn-primary" href="/man-hinh/{{team.TeamId}}" target="_blank" title="Màn hình hiển thị"><i class="fa fa-desktop"></i></a>
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <a class="btn btn-primary" href="/nhap?teamId={{team.TeamId}}" target="_blank" title="Nhập liệu cho ngày hôm nay"><i class="fa fa-keyboard-o"></i></a>
+                                }
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="btn btn-danger" href="/Goals/Admin?teamId={{session.TeamId}}" target="_blank" title="Lịch sử sản xuất"><i class="fa fa-history"></i></a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="daily-goal-right clearfix" ng-if="team.GoalSessions.length > 1">
+                                <div class="row">
+                                    <table class="table table-responsive text-center borderless">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center goal-title" width="33.33%">Mục tiêu ngày</th>
+                                                <th class="text-center goal-title" width="33.33%">Lệch</th>
+                                                <th class="text-center goal-title" width="33.33%">%Năng suất</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="text-center">
+                                                <td>
+                                                    <h1 class="goal-value"><b>{{team.TotalQuantity}}</b></h1>
+                                                </td>
+                                                <td>
+                                                    <h1 class="goal-value"><b>{{team.TotalQuantity - team.TotalQuantityProduct}}</b></h1>
+                                                </td>
+                                                <td>
+                                                    <h1 class="goal-value"><b>{{(team.TotalQuantityProduct > team.TotalQuantity?team.TotalQuantity:team.TotalQuantityProduct)*100/team.TotalQuantity|number:0}}%</b></h1>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="progress">
+                                        <div ng-repeat-start="session in team.GoalSessions" class="progress-bar progress-bar-danger" style="width:{{session.TotalProduceQuantity *100/ team.TotalQuantity|number:0}}%"></div>
+                                        <div ng-repeat-end class="progress-bar progress-bar-info" style="width:{{(session.TotalQuantity - session.TotalProduceQuantity) *100/ team.TotalQuantity|number:0}}%"></div>
+                                    </div>
+                                    <table class="table table-responsive table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">Sản xuất</th>
+                                                <th class="text-center">Mã hàng</th>
+                                                <th class="text-center">Đã làm</th>
+                                                <th class="text-center">Còn thiếu</th>
+                                                <th class="text-center">Mục tiêu</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="session in team.GoalSessions">
+                                            <tr>
+                                                <td rowspan="{{ session.Products.length + 1}}">Ca {{session.SessionOrder}}</td>
+                                            </tr>
+                                            <tr ng-repeat="product in session.Products">
+                                                <td>{{product.ProductId}}</td>
+                                                <td>{{product.ProduceQuantity}} ({{product.Quantity > product.ProduceQuantity ? (product.ProduceQuantity*100/ product.Quantity|number:0):100}}%)</td>
+                                                <td ng-init="mQuantity = product.Quantity > product.ProduceQuantity? product.Quantity - product.ProduceQuantity:0">{{mQuantity}} ({{mQuantity*100/product.Quantity | number:0}}%)</td>
+                                                <td>{{product.Quantity}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td>Cả ngày</td>
+                                                <td></td>
+                                                <td>{{team.TotalQuantityProduct}} ({{(team.TotalQuantityProduct>team.TotalQuantity?100: (team.TotalQuantityProduct*100/team.TotalQuantity))|number:0}}%)</td>
+                                                <td ng-init="mQuantity = team.TotalQuantity > team.TotalQuantityProduct? team.TotalQuantity - team.TotalQuantityProduct:0">{{mQuantity}}({{mQuantity*100/team.TotalQuantity|number:0}}%)</td>
+                                                <td>{{team.TotalQuantity}}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="daily-goal-right clearfix" ng-repeat="session in team.GoalSessions">
+                                <div class="tab-content">
+                                    <div id="team_{{session.TeamId}}_order_{{$index}}_chart_1" class="tab-pane active">
+                                        <div class="row daily-col-5">
+                                            <div class="row">
+                                                @* 50-50 *@
+                                                <table class="table table-responsive text-center borderless">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center goal-title" width="50%"><b>MỤC TIÊU CUỐI {{team.GoalSessions.length == 1?'NGÀY':'CA ' + session.SessionOrder}}</b></th>
+                                                            <th class="text-center goal-title" width="50%"><b>% NĂNG SUẤT</b></th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <tr class="text-center">
+                                                            <td>
+                                                                <h1 class="goal-value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.TotalQuantity - session.LastUpdatedProduceQuantity | abs}}</b></h1>
+                                                            </td>
+                                                            <td>
+                                                                <h1 class="goal-value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.UpdatedData?((session.LastUpdatedProduceQuantity * 100) / session.TotalQuantity | number: 1) + '%' :'N/A'}}</b></h1>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+                                            <div class="row">
+                                                <table class="table table-responsive text-center borderless" ng-show="haveReasons(session.LastReasons)">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center goal-title" width="25%">MÃ HÀNG</th>
+                                                            <th class="text-center goal-title" width="25%">NGUYÊN NHÂN</th>
+                                                            <th class="text-center goal-title" width="50%">GHI CHÚ</th>
+                                                            <th class="text-center"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                        <tr class="text-center" ng-repeat="preason in session.LastReasons" ng-if="preason.Reasons.length > 0">
+                                                            <td style="vertical-align:text-top" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><strong>{{preason.ProductId}}</strong></td>
+                                                            <td style="vertical-align:text-top">
+                                                                <ul class="list-unstyled" style="margin-bottom: 0;">
+                                                                    <li ng-repeat="reason in preason.Reasons">{{reason.Name}}</li>
+                                                                </ul>
+                                                            </td>
+
+                                                            <td class="text-center" style="vertical-align:text-top">
+                                                                <ul class="list-unstyled" style="margin-bottom: 0;">
+                                                                    <li ng-repeat="pcomment in session.LastComments" ng-if="pcomment.Comment">{{pcomment.Comment}}</li>
+                                                                </ul>
+
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                               
+                                            </div>
+
+
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-md-12">
+                                                <div class="text-left" style="line-height: 44px; width: 80px; float:left"><strong>Sản phẩm</strong></div>
+                                                <div style="width: calc(100% - 80px); float:left">
+                                                    <div class="timeline-header" id="pt-header-{{session.TeamId}}">
+                                                        <div class="point" ng-if="session.ChartModel.PCurrentTime < 100" data-toggle="tooltip" data-placement="top" title="~{{session.ChartModel.PredictProduceQuantity}}" style="left: calc({{session.ChartModel.PPredictProduceQuantity}}% - 8px)"></div>
+                                                        <div class="range-difference"></div>
+
+                                                    </div>
+                                                    <div id="pt-body-{{session.TeamId}}" style="height: 6px; background:#eeeeee">
+                                                        <div ng-repeat="hour in session.ChartModel.HourPieces | filter: {IsPass : false}" style="width:{{hour.PProduceQuantity}}%; position: relative; float:left;">
+                                                            <div class="progress">
+                                                                <div class="progress-bar progress-bar-info" style="width: {{hour.PStartQuantity}}%"></div>
+                                                                <div class="progress-bar progress-bar-quantity" id="pq-{{session.TeamId}}-{{hour.EndTime}}" data-pos="{{hour.PRealProduceQuantity}}" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'progress-bar-success':'progress-bar-danger'" style="width: {{100 - hour.PStartQuantity}}%"></div>
+                                                            </div>
+                                                            <div class="quantity-tooltip-text" ng-class="{'always-show': hour.RealProduceQuantity ==  session.LastUpdatedProduceQuantity && hour.HasData}" id="tooltiptext_{{session.TeamId}}_hour_{{hour.EndTime}}" data-pos="{{hour.PRealProduceQuantity}}" style="right: -15px">{{hour.RealProduceQuantity}}</div>
+                                                            <div class="range-difference"></div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-left" style="line-height: 44px; width: 80px; float:left"><strong>Thời gian</strong></div>
+                                                <div class="production-timeline" style="width: calc(100% - 80px); float:left">
+                                                    <div class="timeline-header">
+                                                        <div class="point" ng-if="session.ChartModel.PCurrentTime>=0 && session.ChartModel.PCurrentTime <= 100" data-toggle="tooltip" data-placement="bottom" title="{{session.ChartModel.CurrentTime}}" style="left:calc({{session.ChartModel.PCurrentTime}}% - 8px)"></div>
+                                                    </div>
+                                                    <div class="timeline-body">
+                                                        <div ng-repeat="hour in session.ChartModel.HourPieces" class="hour-piece" style="width:{{100/session.ChartModel.HourPieces.length}}%;">
+                                                            <div class="progress" hour-tooltip hour="hour" pre-hour="session.ChartModel.HourPieces[$index - 1]" team-id="session.TeamId">
+                                                                <div class="progress-bar progress-bar-info" style="width: {{hour.PStartTime}}%"></div>
+                                                                <div class="progress-bar" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'progress-bar-success':'progress-bar-danger'" ng-if="!hour.IsPass" style="width:{{100-hour.PStartTime}}%"></div>
+                                                            </div>
+
+                                                            <div class="end-point" ng-class="hour.IsPass?'': !hour.HasData ? (team.LastUpdatedProduceQuantity < team.LastUpdatedQuantity ? 'red-border': 'green-border') : (team.LastUpdatedProduceQuantity < team.LastUpdatedQuantity ? 'red-bg': 'green-bg')" data-tooltiptextid="tooltiptext_{{team.TeamId}}_hour_{{hour.EndTime}}" hour="hour" team-id="team.TeamId" id="quantity_tooltip_{{team.TeamId}}_{{hour.EndTime}}" quantity-tooltip></div>
+
+                                                            <div ng-if="$first" class="start-time">{{hour.StartTime}}</div>
+                                                            <div class="end-time">{{hour.EndTime}}</div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row daily-col-5">
+                                            <div class="col-md-15 col-sm-3 box-1">
+                                                <div class="main-box infographic-box">
+                                                    <span class="headline"><b>MỤC TIÊU {{team.GoalSessions.length == 1?'NGÀY':'CA'}}</b></span>
+                                                    <span class="value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.TotalQuantity | number:0}}</b></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-15 col-sm-3 box-1">
+                                                <div class="main-box infographic-box">
+                                                    <span class="headline"><b>MỤC TIÊU GIỜ</b></span>
+                                                    <span class="value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.TotalQuantity/session.TotalHour| number:0}}</b></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-15 col-sm-3 box-1">
+                                                <div class="main-box infographic-box">
+                                                    <span class="headline"><b>MỤC TIÊU LÚC {{session.LastUpdatedHour}}</b></span>
+                                                    <span class="value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.LastUpdatedQuantity}}</b></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-15 col-sm-3 box-2">
+                                                <div class="main-box infographic-box">
+                                                    <span class="headline"><b>THỰC TẾ LÚC {{session.LastUpdatedHour}}</b></span>
+                                                    <span class="value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.UpdatedData?session.LastUpdatedProduceQuantity:'N/A'}}</b></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-15 col-sm-3 box-3">
+                                                <div class="main-box infographic-box">
+                                                    <span class="headline"><b>LỆCH</b></span>
+                                                    <span class="value" ng-class="session.LastUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.UpdatedData ? (session.LastUpdatedProduceQuantity - session.LastUpdatedQuantity|abs) : 'N/A'}}</b></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="team_{{team.TeamId}}_order_{{$index}}_chart_2" class="tab-pane">
+                                        <div id="team_{{team.TeamId}}_order_{{$index}}_hourchart" class="hourchart"></div>
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th><span></span></th>
+                                                    <th class="text-center" ng-repeat="goaldetail in session.GoalDetails">
+                                                        <span><b>{{goaldetail.EndCountTimeString}}</b></span>
+                                                    </th>
+                                                    <th class="text-center">Tổng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center"><b>MỤC TIÊU</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails"><b>{{goaldetail.Quantity| number: 0}}</b></td>
+                                                    <td class="text-center"><b>{{team.LastUpdatedQuantity| number: 0}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><b>THỰC TẾ</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails"><b ng-if="goaldetail.IsPass">{{goaldetail.ProduceQuantity!=0 ? (goaldetail.ProduceQuantity| number: 0) : 'N/A'}}</b></td>
+                                                    <td class="text-center"><b>{{team.LastUpdatedProduceQuantity| number: 0}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><b>LỆCH</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails"><span ng-class="goaldetail.ProduceQuantity >= goaldetail.Quantity? 'green': 'red'" ng-if="goaldetail.IsPass"><b>{{goaldetail.ProduceQuantity && goaldetail.Quantity ? (goaldetail.ProduceQuantity - goaldetail.Quantity| number: 0): 'N/A'}}</b></span></td>
+                                                    <td class="text-center" ng-class="session.astUpdatedProduceQuantity >= session.LastUpdatedQuantity?'green':'red'"><b>{{session.LastUpdatedProduceQuantity - session.LastUpdatedQuantity | abs| number:0}}</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><b>NGUYÊN NHÂN</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails">
+                                                        <span ng-if="goaldetail.IsPass && haveReasons(goaldetail.ProductDetails)" class="red" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="hover"
+                                                              data-content="{{getReasons(goaldetail)}}" data-html="true"
+                                                              data-original-title="" title="">
+                                                            <i class="fa fa-warning fa-lg"></i>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><b>GHI CHÚ</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails">
+                                                        <span ng-if="goaldetail.IsPass && haveComments(goaldetail.ProductDetails)" class="red" data-container="body" data-toggle="popover" data-placement="bottom" data-trigger="hover"
+                                                              data-content="{{getComments(goaldetail)}}" data-html="true"
+                                                              data-original-title="" title="">
+                                                            <i class="fa fa-warning fa-lg"></i>
+                                                        </span>
+                                                    </td>
+                                                    <td class="text-center"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="team_{{team.TeamId}}_order_{{$index}}_chart_3" class="tab-pane">
+                                        <div id="team_{{team.TeamId}}_order_{{$index}}_empchart" class="empchart"></div>
+                                        <table class="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th><span></span></th>
+                                                    <th class="text-center" ng-repeat="goaldetail in session.GoalDetails">
+                                                        <span><b>{{goaldetail.EndCountTimeString}}</b></span>
+                                                    </th>
+                                                    @*<th class="text-center">Tổng</th>*@
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center"><b>Có mặt</b></td>
+
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails"><b ng-if="goaldetail.IsPass">{{goaldetail.NoEmployee}}</b></td>
+                                                    @*<td class="text-center"><b>{{session.LastUpdatedQuantity| number: 0}}</b></td>*@
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><b>Vắng mặt</b></td>
+                                                    <td class="text-center" ng-repeat="goaldetail in session.GoalDetails"><b ng-if="goaldetail.IsPass">{{ goaldetail.TotalEmployee - goaldetail.NoEmployee}}</b></td>
+                                                </tr>
+
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th class="text-center"><b>Tổng số</b></th>
+                                                    <th class="text-center" ng-repeat="goaldetail in session.GoalDetails"><b ng-if="goaldetail.IsPass">{{goaldetail.TotalEmployee}}</b></th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div id="team_{{team.TeamId}}_order_{{$index}}_chart_4" class="tab-pane">
+                                       
+                                    </div>
+                                </div>
+                                <div class="btn-group pull-right">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a class="btn" data-toggle="tab" href="#team_{{team.TeamId}}_order_{{$index}}_chart_1">
+                                                Tổng quan
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="btn chart2-btn" data-toggle="tab" href="#team_{{team.TeamId}}_order_{{$index}}_chart_2">
+                                                Chi tiết giờ
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="btn chart3-btn" data-toggle="tab" href="#team_{{team.TeamId}}_order_{{$index}}_chart_3">
+                                                Công nhân
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="btn chart4-btn" data-toggle="tab" href="#team_{{team.TeamId}}_order_{{$index}}_chart_4"  data-teamid={{team.TeamId}}>
+                                                QC
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="viewQCReportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-slg">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+@section Styles
+{
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet">
+    <link href="~/Content/views/factories.details.css" rel="stylesheet" />
+}
+@section Scripts
+{
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/highcharts/highcharts.js"></script>
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script>
+        var factoryId = '@Model';
+        var date = '@date';
+        var predate = '@predate';
+        var nextdate = '@nextdate';
+        var iscurrentdate = '@iscurrentdate';
+    </script>
+    <script src="~/Scripts/views/factories.details.js"></script>
+}

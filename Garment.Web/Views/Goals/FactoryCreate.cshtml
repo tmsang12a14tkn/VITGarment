@@ -1,0 +1,983 @@
+﻿@model Factory
+@{
+    ViewBag.Title = "Nhập dữ liệu cho xí nghiệp";
+    var isAdmin = User.IsInRole("Admin");
+    DateTime currentDate = ViewBag.Date;
+    DateTime beginTabTime = DateTimeExtensions.StartOfWeek(currentDate, DayOfWeek.Monday);
+    DateTime lastTabTime = beginTabTime.AddDays(6);
+}
+
+<div class="row container-div" id="containerinput" ng-app="garmentApp" ng-controller="goalscontroller">
+    <div>
+        <div class="main-box">
+            <div class="main-box-header clearfix">
+                <div class="col-md-5">
+                    <a href="/Factories/details?id=@Model.Id" title="Trở về trang tiến độ @Model.Name">
+                        <i class="fa fa-arrow-left"></i>
+                        <span>Trở về trang tiến độ @Model.Name</span>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h1><b>@Model.Name</b></h1>
+                </div>
+            </div>
+            <div class="main-box-body tabs-wrapper">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id})"><span class="fa fa-home"></span></a>
+                    </li>
+                    <li>
+                        <input type="text" style="opacity:0; width: 0; float: left" name="datepicker" id="datepicker" />
+                        <a href="#" id="btndatepicker">
+                            <span class="fa fa-calendar"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = currentDate.AddDays(-7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    </li>
+                    @for (var date = beginTabTime; date <= lastTabTime; date = date.AddDays(1))
+                    {
+                        <li class="@(date == currentDate?"active":"")@(date > DateTime.Now?" disabled":"")">
+                            <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = date.ToString("dd/MM/yyyy")})"><b>@date.DayOfWeekVN()</b> @date.ToString("dd/MM")</a>
+                        </li>
+                    } 
+                    <li class="@(currentDate.AddDays(7) > DateTime.Now?"disabled":"")">
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = currentDate.AddDays(7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </li>
+                </ul>
+                @* check1 *@
+                @*  ng-show="isLoadFirst" *@
+                <a href="#modal-session" data-toggle="modal" class="btn btn-primary" ng-show="isLoadFirst">Ca làm việc</a>
+                <a href="#modal-target" data-toggle="modal" class="btn btn-primary" ng-show="isLoadFirst">Nhập kế hoạch sản xuất</a>
+                <a href="#modal-noemployee" data-toggle="modal" class="btn btn-primary" ng-show="isLoadFirst">Điểm danh công nhân</a>
+                <hr />
+                
+                <div class="panel-group accordion" id="accordion">
+                    @*<div class="row" ng-show="!isLoadFirst" style="margin:0 auto; width:50%">
+                        <div class="form-group">
+                            <h2><b>Chọn đội nhóm</b></h2>
+                            <div class="checkbox-nice" ng-repeat="(index,enabled) in teams">
+                                <input id="checkbox-{{index}}" type="checkbox" ng-model="teams[index].Selected">
+                                <label for="checkbox-{{index}}">
+                                    {{teams[index].Name}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-success" href="#" ng-click="submitChoseTeam()">
+                                <i class="fa fa-save"></i>
+                                Hoàn thành
+                            </button>
+                        </div>
+                    </div>*@
+
+
+                        @* Thêm trước *@
+                        <div class="panel panel-default" ng-show="pregroup" id="tab-group-pre">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre">
+                                        <b>+</b>
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_pre">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in pregroup.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="ReasonIds" multiple="multiple" multiple-select ng-model="productdetail.ReasonIds"
+                                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre" ng-click="savePreGoal()">
+                                            <i class="fa fa-save"></i>
+                                            Thêm
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre">
+                                            <i class="fa fa-close"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="group in groups" class="panel" ng-class="{'active':$first, 'panel-default':group.IsChangeProQuantity == 0, 'panel-primary':group.IsChangeProQuantity == 1, 'panel-deficient':group.IsChangeProQuantity == 2 }" id="tab-group-{{$index}}">
+                            <div class="panel-heading" id="collapcontainer_{{group.StartTime}}">
+                                <h4 class="panel-title">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{group.StartTime}}_{{group.StartDay}}">
+                                        {{group.StartTime}} - {{group.EndTime}}
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_{{group.StartTime}}_{{group.StartDay}}">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                                @*<th class="text-center" width="5%">Lỗi</th>*@
+                                                @*@if (isAdmin)
+                                            {
+                                                <th class="text-center" width="5%">Phiên bản</th>
+                                            }*@
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in group.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits60 />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+
+                                                @* Mã sản phẩm *@
+                                                @*<td>
+                                                <input name="ProductId" class="form-control text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="goaldetail.ProductId" />
+                                            </td>*@
+                                                @* Mục tiêu *@
+                                                @*<td>
+                                                <input type="text" class="form-control" ng-model="goaldetail.Quantity" hide-zero only-digits />
+                                            </td>*@
+                                                @* Thực tế *@
+                                                @*<td>
+                                                <input type="text" class="form-control" ng-model="goaldetail.ProduceQuantity" hide-zero only-digits />
+                                            </td>*@
+                                                @* Lý do *@
+                                                @*<td>
+                                                <select name="ReasonId" ng-model="goaldetail.ReasonId"
+                                                        ng-options="reason.Id as reason.Name for reason in reasons"
+                                                        class="form-control">
+                                                    <option></option>
+                                                </select>
+                                            </td>*@
+                                                @* Ghi chú *@
+                                                @*<td>
+                                                <textarea style="word-wrap: normal;height:35px" class="form-control" wrap="soft" ng-model="goaldetail.Comment"></textarea>
+                                            </td>*@
+                                                @*<td>
+                                                <input type="text" class="form-control" ng-model="goaldetail.NoError" hide-zero only-digits />
+                                            </td>*@
+
+                                                @*@if (isAdmin)
+                                            {
+                                                <td>
+                                                    <a href="#modal-revisions-{{goaldetail.Id}}" data-toggle="modal">{{goaldetail.Revisions.length}}</a>
+                                                </td>
+                                            }*@
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="Reasons" multiple="multiple" multiple-select ng-model="productdetail.Reasons"
+                                                            ng-options="reason.Name for reason in reasons track by reason.Id"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-collapindex="#collapse_{{$index}}" ng-click="saveSessionGoal(group)">
+                                            <i class="fa fa-save"></i>
+                                            Lưu thay đổi
+                                        </button>
+                                        <button type="button" class="btn btn-danger" ng-click="cancelSessionGoal(group.StartTime)">
+                                            <i class="fa fa-times"></i>
+                                            Huỷ
+                                        </button>
+                                        <button type="button" class="btn btn-info" ng-show="$last || $first" ng-click="hideSessionGoal(group)">
+                                            <i class="fa fa-eye-slash"></i>
+                                            Ẩn
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            @*<modal-revisions ng-repeat="goaldetail in goal.GoalDetails" data="goaldetail.Revisions" title="Các phiên bản đã lưu" id="modal-revisions-{{goaldetail.Id}}">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Thời gian</th>
+                                        <th>Phút</th>
+                                        <th>Tài khoản</th>
+                                        <th>Mục tiêu</th>
+                                        <th>Thực tế</th>
+                                        <th>Số nhân công</th>
+                                        <th>Lý do</th>
+                                        <th>Mã hàng</th>
+                                        <th>Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="rv in goaldetail.Revisions">
+                                        <td>{{rv.DateTime}}</td>
+                                        <td>{{rv.TotalMinutes}}</td>
+                                        <td>{{rv.UserName}}</td>
+                                        <td>{{rv.Quantity}}</td>
+                                        <td>
+                                            {{rv.ProduceQuantity}}
+                                        </td>
+                                        <td>{{rv.NoEmployee}}</td>
+                                        <td>{{rv.Reason}}</td>
+                                        <td>{{rv.ProductId}}</td>
+                                        <td>{{rv.Comment}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </modal-revisions>*@
+                        </div>
+
+                        @* Thêm sau *@
+                        <div class="panel panel-default" ng-show="nextgroup" id="tab-group-next">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_next">
+                                        <b>+</b>
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_next">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in nextgroup.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits60 />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="ReasonIds" multiple="multiple" multiple-select ng-model="productdetail.ReasonIds"
+                                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-toggle="collapse" data-parent="#accordion" href="#collapse_next" ng-click="saveNextGoal()">
+                                            <i class="fa fa-save"></i>
+                                            Thêm
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion" href="#collapse_next">
+                                            <i class="fa fa-close"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-session" data-backdrop="true" tabindex="1" data-keyboard="true">
+        <div class="modal-dialog modal-lg1000">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title"><b>Thiết lập ca làm việc</b></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel-group accordion" id="accordion_sessions">
+                        <div ng-repeat="fSession in factorySessions" class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a style="color:#555" class="accordion-toggle" ng-class="{'collapsed':!$first}" data-toggle="collapse" data-parent="#accordion_sessions" href="#collapse_session_{{fSession.Order}}">
+                                        <b>Ca {{fSession.Order}} ({{fSession.StartStr}} - {{fSession.EndStr}}) </b>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div class="panel-collapse collapse" ng-class="{'in':$first}" id="collapse_session_{{fSession.Order}}">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="radio">
+                                            <input type="radio" id="optionsRadios_{{fSession.Order}}_1" ng-model="fSession.Type" value="0">
+                                            <label for="optionsRadios_{{fSession.Order}}_1">
+                                                <b>Toàn bộ xí nghiệp</b>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <input type="radio" id="optionsRadios_{{fSession.Order}}_2" ng-model="fSession.Type" ng-value="1">
+                                            <label for="optionsRadios_{{fSession.Order}}_2">
+                                                <b>Riêng từng tổ</b>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div ng-if="fSession.Type==0">
+                                        <div class="row form-group">
+                                            <label class="control-label col-lg-2" for="fSessionStartHour_{{fSession.Order}}"><b>Bắt đầu</b></label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" timepicker time="fSession.Start" id="fSessionStartHour_{{fSession.Order}}" ng-model="fSession.StartStr">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <select class="form-control" ng-model="fSession.Start.Days" convert-to-number id="fSessionStartDay_{{fSession.Order}}">
+                                                    <option value="0">Hôm nay</option>
+                                                    <option value="1">Ngày mai</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="row form-group">
+                                            <label class="control-label col-lg-2" for="fSessionEnd_{{fSession.Order}}"><b>Kết thúc</b></label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" timepicker time="fSession.End" id="fSessionEndHour_{{fSession.Order}}" ng-model="fSession.EndStr">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <select class="form-control" ng-model="fSession.End.Days" convert-to-number id="fSessionEndDay_{{fSession.Order}}">
+                                                    <option value="0">Hôm nay</option>
+                                                    <option value="1">Ngày mai</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div ng-if="fSession.Type==1">
+                                        <table class="table_session">
+                                            <thead class="text-center text_color">
+                                                <tr>
+                                                    <td><b>Tổ</b></td>
+                                                    <td><b>Thời gian bắt đầu</b></td>
+                                                    <td><b>Thời gian kết thúc</b></td>
+                                                    <td><b>Không làm</b></td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="tSession in fSession.TeamSessions">
+                                                    <td class="text_color text-center"><b>{{tSession.TeamName}}</b></td>
+                                                    <td class="form-inline">
+                                                        <div class="col-lg-6">
+                                                            <input type="text" class="form-control col-lg-12" ng-model="tSession.StartStr" timepicker time="tSession.Start">
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <select convert-to-number class="form-control col-lg-12" ng-model="tSession.Start.Days" style="width:100%">
+                                                                <option value="0">Hôm nay</option>
+                                                                <option value="1">Ngày mai</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" class="form-control col-lg-12" ng-model="tSession.EndStr" timepicker time="tSession.End">
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <select convert-to-number class="form-control col-lg-12" ng-model="tSession.End.Days">
+                                                                <option value="0">Hôm nay</option>
+                                                                <option value="1">Ngày mai</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="checkbox-nice" style="margin-left: 30px;">
+                                                            <input type="checkbox" id="checkbox_{{fSession.Order}}_{{$index}}" ng-model="tSession.NotWork">
+                                                            <label for="checkbox_{{fSession.Order}}_{{$index}}">
+
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="row" ng-if="$last && !$first">
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion_sessions" href="#collapse_session_{{fSession.Order}}"
+                                                ng-click="removeFactorySession(fSession)" aria-expanded="true">
+                                            <i class="fa fa-trash"></i>
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion_sessions" href="#collapse_session_new">
+                                        <b>+</b>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div class="panel-collapse collapse" id="collapse_session_new">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="radio">
+                                            <input type="radio" id="optionsRadios_new_1" ng-model="fSessionNew.Type" value="0">
+                                            <label for="optionsRadios_new_1">
+                                                <b>Toàn bộ xí nghiệp</b>
+                                            </label>
+                                        </div>
+                                        <div class="radio">
+                                            <input type="radio" id="optionsRadios_new_2" ng-model="fSessionNew.Type" ng-value="1">
+                                            <label for="optionsRadios_new_2">
+                                                <b>Riêng từng tổ</b>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div ng-if="fSessionNew.Type==0">
+                                        <div class="form-group">
+                                            <label class="control-label col-lg-2" for="fSessionNewStartHour">Bắt đầu</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" timepicker time="fSessionNew.Start" id="fSessionNewStartHour" ng-model="fSessionNew.StartStr">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <select class="form-control" id="fSessionNewStartDay" convert-to-number ng-model="fSessionNew.Start.Days">
+                                                    <option value="0">Hôm nay</option>
+                                                    <option value="1">Ngày mai</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-lg-2" for="fSessionNewEnd_{{fSessionNew.Order}}">Kết thúc</label>
+                                            <div class="col-lg-5">
+                                                <input type="text" class="form-control" timepicker time="fSessionNew.End" id="fSessionNewEndHour" ng-model="fSessionNew.EndStr">
+                                            </div>
+                                            <div class="col-lg-5">
+                                                <select class="form-control" id="fSessionNewEndDay" convert-to-number ng-model="fSessionNew.End.Days">
+                                                    <option value="0">Hôm nay</option>
+                                                    <option value="1">Ngày mai</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div ng-if="fSessionNew.Type==1">
+                                        <table class="table_session text_color">
+                                            <thead class="text-center">
+                                                <tr>
+                                                    <td><b>Tổ</b></td>
+                                                    <td><b>Thời gian bắt đầu</b></td>
+                                                    <td><b>Thời gian kết thúc</b></td>
+                                                    <td><b>Không làm</b></td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="tSession in fSessionNew.TeamSessions">
+                                                    <td class="text_color text-center"><b>{{tSession.TeamName}}</b></td>
+                                                    <td>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" class="form-control col-lg-12" ng-model="tSession.StartStr" timepicker time="tSession.Start">
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <select convert-to-number class="form-control col-lg-12" ng-model="tSession.Start.Days">
+                                                                <option value="0">Hôm nay</option>
+                                                                <option value="1">Ngày mai</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </td>
+                                                    <td>
+                                                        <div class="col-lg-6">
+                                                            <input type="text" class="form-control col-lg-12" ng-model="tSession.EndStr" timepicker time="tSession.End">
+                                                        </div>
+                                                        <div class="col-lg-6">
+                                                            <select convert-to-number class="form-control col-lg-12" ng-model="tSession.End.Days">
+                                                                <option value="0">Hôm nay</option>
+                                                                <option value="1">Ngày mai</option>
+                                                            </select>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="checkbox-nice" style="margin-left: 30px;">
+                                                            <input type="checkbox" id="checkbox_new_{{$index}}" ng-model="tSession.NotWork">
+                                                            <label for="checkbox_new_{{$index}}">
+
+                                                            </label>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-toggle="collapse" data-parent="#accordion_sessions" href="#collapse_session_new" ng-click="addNewFactorySession()" aria-expanded="true">
+                                            <i class="fa fa-save"></i>
+                                            Thêm
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion_sessions" href="#collapse_session_new" aria-expanded="true">
+                                            <i class="fa fa-close"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="saveFactorySessions()"><i class="fa fa-save"></i> Lưu thay đổi</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-close"></i> Hủy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-target" data-backdrop="true" tabindex="1" data-keyboard="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelFactoryQuantity()">&times;</button>
+
+                    <h4 class="modal-title"><b>Nhập kế hoạch sản xuất</b></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center planloading" width="100%"><i class="fa fa-spinner fa-pulse fa-2x fa-fw"></i></div>
+
+                    <div id="table_input" class="dwrapper hidetool">
+                        <table id="fixed_hdr2">
+                            <thead class="th_input">
+                                <tr>
+                                    <th class="text_color" rowspan="2"><b>Tổ</b></th>
+                                    <th class="" rowspan="2"></th>
+                                    <th class=""></th>
+                                    <th class="text_color" ng-repeat="hour in factoryQuantity.QuantityHours">
+                                        <b>{{hour.Start.Hours}}H - {{hour.End.Hours}}H</b>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat-start="team in factoryQuantity.QuantitiesTeams" style="height: 0px !important;">
+
+                                    <td class="text_color" rowspan="{{3*NoRow(team.GoalProductDetailList) + numSessions}}">
+                                        <b>{{team.TeamName}}</b>
+                                    </td>
+                                </tr>
+                                <tr ng-if="factorySessions.length > 1">
+                                    <td class="text_color"><b>Ca</b></td>
+                                    <td class="" style="border-right:none"></td>
+                                    <td class="border_session" ng-repeat="fSession in factorySessions" colspan="{{fSession.NoHours}}">
+                                        <b>Ca {{fSession.Order}}</b>
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-start="i in range(0, NoRow(team.GoalProductDetailList)-1)">
+                                    <td class="text_color"><b>Mã hàng</b></td>
+                                    <td class="" style="border-right:none"></td>
+                                    <td style="" ng-repeat="goalProductDetail in team.GoalProductDetailList" class="" ng-class="{'empty-cell': productdetail==null, 'border_session': factorySessions.length > 1}" data-productid="productdetail.ProductId">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <input style="width:75px" ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.ProductId" class="text-uppercase productid" />
+
+                                        <a href="#" class="table-link settings" title="Chức năng" rel="tooltip" data-toggle="tooltip" ng-show="productdetail != null" ng-click="setproductdetail(team, productdetail, i,$index,$parent.$index)">
+                                            <i class="fa fa-cog" title="Chức năng"></i>
+                                        </a>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text_color"><b>Mục tiêu</b></td>
+                                    <td class="" style="border-right:none"></td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="" ng-class="{'empty-cell': productdetail==null, 'border_session': factorySessions.length > 1 }">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <input style="width:75px;margin-right:15px" ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.Quantity" only-digits />
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-end style="height:0px !important"></tr>
+                                <tr ng-repeat-end>
+                                    <td class=""></td>
+                                    <td class="" style="border-right:none"></td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="" ng-class="{'border_session': factorySessions.length > 1}">
+                                        <button class="btn-add-product" ng-click="addNewProduct(goalProductDetail)"><i class="fa fa-plus"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer hidetool" id="table_input_footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateFactoryQuantity()"><i class="fa fa-save"></i> Lưu thay đổi</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="cancelFactoryQuantity()"><i class="fa fa-close"></i> Hủy</button>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal" id="modal-noemployee" tabindex="1" data-backdrop="true" data-keyboard="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelFactoryEmployee()">&times;</button>
+                    <h4 class="modal-title"><b>Điểm danh công nhân</b></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#tab-session1" data-toggle="tab"><b>Ca 1</b></a>
+                            </li>
+                            <li ng-if="factorySessions.length>1">
+                                <a href="#tab-othersession" data-toggle="tab"><b>Ca khác</b></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-content-body clearfix">
+                            <div class="tab-pane fade in active" id="tab-session1">
+                                <table class="table table-responsive table-bordered">
+                                    <thead class="text_color">
+                                        <tr>
+                                            <th class="text-center"><b>Tổ</b></th>
+                                            <th class="text-center"><b>Tổng số</b></th>
+                                            <th class="text-center"><b>Có mặt</b></th>
+                                            <th class="text-center"><b>Vắng mặt</b></th>
+                                            <th class="text-center"><b>Có lý do</b></th>
+                                            <th class="text-center"><b>Không lý do</b></th>
+                                            <th class="text-center"><b>Ghi chú</b></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="tSession in factorySessions[0].TeamSessions">
+                                            <td class="cell-sheet text-center text_color"><b>{{tSession.TeamName}}</b></td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.TotalEmployee" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.NoEmployee" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" class="form-control cell-input" ng-value="tSession.TotalEmployee - tSession.NoEmployee" disabled />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-value="tSession.TotalEmployee - tSession.NoEmployee - tSession.AbsentWithoutReason" class="form-control cell-input" disabled>
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.AbsentWithoutReason" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.AbsentComment" class="form-control cell-input" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane" id="tab-othersession" ng-if="factorySessions.length>1">
+                                
+                                <table class="table table-responsive table-bordered">
+                                    <thead class="text_color">
+                                        <tr>
+                                            <th class="text-center"><b>Tổ</b></th>
+                                            <th class="text-center"><b>Ca</b></th>
+                                            <th class="text-center"><b>Tổng số</b></th>
+                                            <th class="text-center"><b>Có mặt</b></th>
+                                            <th class="text-center"><b>Vắng mặt</b></th>
+                                            <th class="text-center"><b>Có lý do</b></th>
+                                            <th class="text-center"><b>Không lý do</b></th>
+                                            <th class="text-center"><b>Ghi chú</b></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody ng-repeat="(teamName, tSessionGroup) in otherSessionGroups">
+                                         <tr>
+                                             <td class="text-center cell-sheet text_color" rowspan="{{tSessionGroup.length + 1}}"><b>{{teamName}}</b></td>
+                                        </tr>
+                                        <tr ng-repeat="tSession in tSessionGroup">
+                                            <td class="cell-sheet text-center text_color">
+                                                <b>Ca {{tSession.Order}}</b>
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.TotalEmployee" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.NoEmployee" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" class="form-control cell-input" ng-value="tSession.TotalEmployee - tSession.NoEmployee" disabled />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-value="tSession.TotalEmployee - tSession.NoEmployee - tSession.AbsentWithoutReason" class="form-control cell-input" disabled>
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.AbsentWithoutReason" class="form-control cell-input" only-digits />
+                                            </td>
+                                            <td class="cell-sheet">
+                                                <input type="text" ng-model="tSession.AbsentComment" class="form-control cell-input" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateFactoryEmployee()"><i class="fa fa-save"></i> Lưu thay đổi</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="cancelFactoryEmployee()"><i class="fa fa-close"></i> Hủy</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+@section Styles {
+    <style>
+        .panel-title-new {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 16px;
+            color: inherit;
+        }
+
+        .accordion .panel-title-new > a {
+            display: block;
+            position: relative;
+            outline: none;
+            text-decoration: none;
+            color: #FFFFFF;
+            padding-right: 15px;
+        }
+
+         .tablefixed{
+             font-size:11px;
+             border:1px solid;
+         }
+
+         .tablefixed th, .tablefixed td{
+          
+             border:1px solid;
+         }
+
+        .table-fixed{
+            width:98.5%;
+        }
+
+
+        .div-table-content {
+          height:590px;
+          overflow-y: auto;
+        }
+        .cell-input
+        {
+            width: 100%;
+            padding: 5px 10px;
+            border: 0px;
+            text-align: center;
+            background: transparent;
+        }
+        .cell-sheet
+        {
+            padding: 0px !important;
+            margin: 0px;
+            min-width: 120px;
+        }
+        .empty-cell
+        {
+            background: #efeded;
+        }
+        .btn-remove-product 
+        {
+        }
+        .btn-add-product
+        {
+            width: 100%;
+            background: none;
+            border: 0;
+        }
+        .modal-lg{
+            width:1300px !important;
+        }
+		
+        .modal-lg1000{
+            width:1000px !important;
+        }
+
+		.text_color {
+			/*background-color: #3498db;*/
+            color: #3498db;
+		}
+
+        .hidetool{
+            display:none;
+        }
+
+        .border_session{
+            border-right-width:2px !important;
+            border-right-color: #3498db !important;
+        }
+
+        .th_input th{
+            border-right:none !important;
+        }
+        .table_session{
+            width:100% !important;
+            height:400px !important;
+        }
+        .form_control_new{
+            width:100% !important;
+            height:23px !important;
+        }
+
+        .table_session, .table_session thead, .table_session tbody, .table_session th, .table_session td{
+            border:1px solid #CCCCCC;
+
+        }
+
+        .table_session td {
+            padding-top:5px;
+            padding-bottom:5px;
+        }
+
+
+    </style>
+    <link href="~/Content/bootstrap-tagsinput.css" rel="stylesheet" />
+    @*<link href="~/Content/angular-datetime-picker.css" rel="stylesheet" />*@
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/Content/tooltipster/tooltipster.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/tooltipster/themes/tooltipster-shadow.css">
+    <link href="~/Content/bootstrap-multiselect.css" rel="stylesheet" />
+    <link href="~/Content/views/bootstrap-table.css" rel="stylesheet" />
+
+
+<link href="~/Content/plugins/fixed_table_rc.css" type="text/css" rel="stylesheet" media="all" />
+    }
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    @*<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.13.0/ui-bootstrap-tpls.min.js"></script>*@
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script src="~/Scripts/tooltipster/jquery.tooltipster.min.js"></script>
+    <script src="~/Scripts/bootstrap-multiselect.js"></script>
+
+
+<script src="https://meetselva.github.io/fixed-table-rows-cols/js/sortable_table.js"></script>
+<script src="~/Scripts/plugins/fixed_table_rc.js"></script>
+    <script type="text/javascript">
+        var date = '@currentDate.ToString("dd/MM/yyyy")';
+        var factoryId = '@Model.Id'
+        var dow = @((int)currentDate.DayOfWeek);
+        var teamdate = '@currentDate.ToString("yyyy-MM-dd")';
+        var $fixedTable = $('#fixed_hdr2'); 
+</script>
+    <script src="~/Scripts/views/goals.factorycreate.js"></script>
+}
+

@@ -1,0 +1,204 @@
+﻿<ons-page ng-controller="TeamDetailsController" class="daily-goal-right">
+    <ons-toolbar>
+        <div class="left">
+            <ons-toolbar-button>
+                <ons-icon icon="fa-angle-left" style="font-size: 32px; width: 1em" ng-click="goTo(-1);">
+            </ons-toolbar-button>
+        </div>
+        <div class="center"><b>{{team.TeamName}}</b></div>
+        <div class="right">
+            <ons-toolbar-button>
+                <ons-icon icon="fa-angle-right" style="font-size: 32px; width: 1em" ng-click="goTo(1)">
+            </ons-toolbar-button>
+        </div>
+    </ons-toolbar>
+
+    <div class="navigation-bar sub-nav">
+        <div class="navigation-bar__left"><ons-toolbar-button ng-click="goToDate(-1)"><ons-icon icon="ion-chevron-left" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+        <div class="navigation-bar__center">
+            <input type="text" pick-a-date="date" pick-a-date-options="datePickerOptions" style="opacity:0; width: 0" name="datepicker" id="teamdatepicker">
+            <label for="teamdatepicker">
+                {{team.DayOfWeek}} - {{team.Date}}
+                <ons-toolbar-button><ons-icon icon="ion-android-calendar" style="color: #808285; font-size: 22px;" fixed-width="false"></ons-icon></ons-toolbar-button>
+            </label>
+        </div>
+        <div class="navigation-bar__right" ng-if="!isToday()"><ons-toolbar-button ng-click="goToDate(1)"><ons-icon icon="ion-chevron-right" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+    </div>
+
+    <div class="row ons-row-inner">
+        <div class="col-4">
+            <div class="main-box clearfix">
+                <div class="row flex-center">Công nhân</div>
+                <div class="project-box-content">
+                    <div class="chart" percent="[team.PercentEmployee,team.PercentAbsentWithReason]" options="empPieChartOptions" easypiechart>
+                        <div class="content-wrapper">
+                            <div class="content-middle">
+                                <span class="percent">{{team.PercentEmployee}}</span>%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row flex-left flex-left--first"><span>Có mặt</span>{{team.CurrentNoEmployee}}</div>
+                <div class="row flex-left flex-left--first"><span>Vắng có lý do</span>{{team.AbsentWithReason}}</div>
+                <div class="row flex-left flex-left--first"><span>Không lý do</span>{{team.AbsentWithoutReason}}</div>
+                <div class="row flex-left flex-left--first"><span>Tổng số</span>{{team.TotalEmployee}}</div>
+            </div>
+        </div>
+        <div class="col-4" style="border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
+            <div class="main-box clearfix">
+                <div class="row flex-center">Thời gian</div>
+                <div class="project-box-content">
+                    <div ng-if="team.PieChartOptions" class="chart" ng-class="team.Color" percent="team.PercentTime" options="team.PieChartOptions" easypiechart>
+                        <div class="content-wrapper">
+                            <div class="content-middle">
+                                <span class="percent">{{team.PercentTime}}</span>%
+                            </div>
+                        </div>
+                        <!--<div data-rotate="90" data-percent="20" data-bar-color="#c62193" options="pieChartOptions" easypiechart></div>-->
+                    </div>
+
+                </div>
+                <div class="row flex-left"><span>Đã làm</span>{{team.TimePass.toHourString()}}</div>
+                <div class="row flex-left"><span>Còn lại</span>{{team.TimeLeft}}</div>
+                <div class="row flex-left"><span>Tổng số</span>{{team.TotalHour.toHourString()}}</div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="main-box clearfix">
+                <div class="row flex-center">Sản xuất</div>
+                <div class="project-box-content">
+                    <div ng-if="team.PieChartOptions" class="chart" ng-class="team.Color" percent="team.PercentProcess" data-bar-color="#ffb400" options="team.PieChartOptions" easypiechart>
+                        <div class="content-wrapper">
+                            <div class="content-middle">
+                                <span class="percent">{{team.PercentProcess}}</span>%<br />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row flex-left"><span>Đã làm</span>{{team.LastUpdatedProduceQuantity}}</div>
+                <div class="row flex-left"><span>Còn lại</span>{{team.TotalQuantity - team.LastUpdatedProduceQuantity}}</div>
+                <div class="row flex-left"><span>Tổng số</span>{{team.TotalQuantity}}</div>
+            </div>
+        </div>
+    </div>
+
+    <ons-list style="margin-top: 5px;" modifier="inset" ng-repeat="product in team.LastHour.ProductDetails">
+        <ons-list-item>
+            <ons-row class="product">
+                Mã hàng <span style="margin-left: 10px; color: #3f93c9; font-weight: bold">{{product.ProductId}}</span>
+            </ons-row>
+            <ons-row style="line-height: 0; padding-bottom: 10px;">
+                <div ng-if="product.Reasons.length == 0 && team.Color == 'green'">
+                    <ons-icon icon="ion-ios-checkmark" class="green"></ons-icon> Đạt kế hoạch
+                </div>
+                <!--<div ng-if="product.Reasons.length == 0 && product.ProduceQuantity<product.Quantity">
+                    <ons-icon icon="ion-close-circled" class="red"></ons-icon> Không đạt kế hoạch
+                </div>-->
+                <div ng-if="product.Reasons.length != 0">
+                    <div ng-repeat="reason in product.Reasons" style="float: left; margin-right: 10px;">
+                        <img ng-src="img/errors/{{reason.ErrorCode}}.png" width="20" height="20" style="vertical-align: middle; margin: 5px;" />
+                        <span class="flex-left">{{reason.Name}}</span>
+                    </div>
+                </div>
+            </ons-row>
+        </ons-list-item>
+        <ons-list-item ng-if="product.Comment">
+            <div class="ons-row-inner">
+                <div class="note-title">Ghi chú</div>
+                <div class="note-body red">{{product.Comment}}</div>
+            </div>
+        </ons-list-item>
+    </ons-list>
+
+    <div class="ons-row-inner" style="margin-top: 5px;" ng-if="team.ChartModel">
+        <div class="row">
+            <div style="width:20px; margin: 18px 0 0 5px;"><img ng-src="img/icons/production-{{team.Color}}.png" width="20" /></div>
+            <div class="col" style="margin: 0 10px 0 5px">
+                <div class="timeline-header">
+                    <div class="point" ng-if="team.ChartModel.PCurrentTime < 100" data-toggle="tooltip" data-placement="top" title="~{{team.ChartModel.PredictProduceQuantity}}" style="left: calc({{team.ChartModel.PPredictProduceQuantity}}% - 8px)"></div>
+                    <div class="range-difference"></div>
+                </div>
+                <div id="pt-body-{{team.TeamId}}" style="height: 6px; background:#eeeeee">
+                    <div ng-repeat="hour in team.ChartModel.HourPieces | filter: {IsPass : false}" style="width:{{hour.PProduceQuantity}}%; position: relative; float:left;">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-info" style="width: {{hour.PStartQuantity}}%"></div>
+                            <div class="progress-bar progress-bar-quantity" id="pq-{{team.TeamId}}-{{hour.EndTime}}" data-pos="{{hour.PRealProduceQuantity}}" ng-class="team.LastUpdatedProduceQuantity >= team.LastUpdatedQuantity?'progress-bar-success':'progress-bar-danger'" style="width: {{100 - hour.PStartQuantity}}%"></div>
+                        </div>
+                        <div class="quantity-tooltip-text" ng-class="{'always-show': hour.RealProduceQuantity ==  team.LastUpdatedProduceQuantity && hour.HasData}" id="tooltiptext_{{team.TeamId}}_hour_{{hour.EndTime}}" data-pos="{{hour.PRealProduceQuantity}}" style="right: -15px">{{hour.RealProduceQuantity}}</div>
+                        <div class="range-difference"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div style="width:20px; margin: 18px 0 0 5px;"><img ng-src="img/icons/timeline-{{team.Color}}.png" width="20" /></div>
+            <div class="col production-timeline">
+                <div class="timeline-header">
+                    <div class="point" ng-if="team.ChartModel.PCurrentTime < 100" data-toggle="tooltip" data-placement="bottom" title="{{team.ChartModel.CurrentTime}}" style="left:calc({{team.ChartModel.PCurrentTime}}% - 8px)"></div>
+                </div>
+                <div class="timeline-body">
+                    <div ng-repeat="hour in team.ChartModel.HourPieces" class="hour-piece" style="width:{{100/team.ChartModel.HourPieces.length}}%;">
+                        <div class="progress" hour-tooltip hour="hour" pre-hour="team.ChartModel.HourPieces[$index - 1]" team-id="team.TeamId">
+                            <div class="progress-bar progress-bar-info" style="width: {{hour.PStartTime}}%"></div>
+                            <div class="progress-bar" ng-class="team.LastUpdatedProduceQuantity >= team.LastUpdatedQuantity?'progress-bar-success':'progress-bar-danger'" ng-if="!hour.IsPass" style="width:{{100-hour.PStartTime}}%"></div>
+                        </div>
+
+                        <div class="end-point" ng-class="hour.IsPass?'': !hour.HasData ? (team.LastUpdatedProduceQuantity < team.LastUpdatedQuantity ? 'red-border': 'green-border') : (team.LastUpdatedProduceQuantity < team.LastUpdatedQuantity ? 'bg-red': 'bg-green')" data-tooltiptextid="tooltiptext_{{team.TeamId}}_hour_{{hour.EndTime}}" hour="hour" team-id="goal.TeamId" id="quantity_tooltip_{{team.TeamId}}_{{hour.EndTime}}" quantity-tooltip></div>
+
+                        <div ng-if="$first" class="start-time">{{hour.StartTime}}</div>
+                        <div class="end-time">{{hour.EndTime}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ons-row style="margin: 5px 0 10px;">
+        <ons-col width="30%">
+            <div class="main-box infographic-box">
+                <span class="headline"><b>MỤC TIÊU NGÀY/GIỜ </b></span>
+                <span class="value" ng-class="team.Color"><b>{{team.TotalQuantity}} / {{(team.TotalHour == 0 ? 0 : team.TotalQuantity/team.TotalHour)|number:0}}</b></span>
+            </div>
+        </ons-col>
+        <ons-col width="45%">
+            <div class="main-box infographic-box" style="border-left: 1px solid #ddd; border-right: 1px solid #ddd;">
+                <span class="headline"><b>THỰC TẾ / MỤC TIÊU LÚC {{team.LastUpdatedHour}}</b></span>
+                <span class="value" ng-class="team.Color"><b>{{team.LastUpdatedProduceQuantity}} / {{team.LastUpdatedQuantity}}</b></span>
+            </div>
+        </ons-col>
+        <ons-col width="25%">
+            <div class="main-box infographic-box">
+                <span class="headline"><b>LỆCH</b></span>
+                <span class="value" ng-class="team.Color"><b>{{team.LastUpdatedProduceQuantity - team.LastUpdatedQuantity|abs}}</b></span>
+            </div>
+        </ons-col>
+    </ons-row>
+
+    <ons-bottom-toolbar>
+        <div class="navigation-bar__left"><ons-back-button>Trở lại</ons-back-button></div>
+        <div class="navigation-bar__title navigation-bar__center" onclick="modal.toggle('modal')">Menu</div>
+        <div class="navigation-bar__right">
+            <ons-toolbar-button>
+                <ons-icon icon="ion-gear-a" style="font-size: 18px; width: 1em"></ons-icon>
+            </ons-toolbar-button>
+        </div>
+    </ons-bottom-toolbar>
+
+    <ons-modal var="modal">
+        <ons-list>
+            <ons-list-item class="has-sub" ng-click="goToTeamOverview()">Báo cáo ngày</ons-list-item>
+            <ons-list-item class="sub-menu">
+                <ons-list>
+                    <ons-list-item class="active" ng-click="goToTeamOverview()">Tổng quan</ons-list-item>
+                    <ons-list-item ng-click="goToHoursChart()">Chi tiết sản xuất theo giờ</ons-list-item>
+                </ons-list>
+            </ons-list-item>
+            <ons-list-item ng-click="goToTeamErrorChart2()">Biểu đồ sự cố</ons-list-item>
+            <ons-list-item ng-click="goToTeamErrorChart()">Biểu đồ sự cố chi tiết</ons-list-item>
+            <ons-list-item ng-click="goToTeamEmployeeChart()">Biểu đồ nhân sự</ons-list-item>
+            <ons-list-item>Biểu đồ sản xuất</ons-list-item>
+        </ons-list>
+        
+    </ons-modal>
+</ons-page>

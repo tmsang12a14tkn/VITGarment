@@ -1,0 +1,260 @@
+﻿@model QC
+@{ 
+    var now = DateTime.Now;
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">@Model.Name</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-3">
+            <button class="btn btn-default">@Model.Type</button>
+        </div>
+        <div class="col-md-6 text-center"><strong>Ngày @now.Day tháng @now.Month năm @now.Year</strong></div>
+        <div class="col-md-3">
+            Mã quản lý
+            <input type="text" class="disabled"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Chuyền số</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo tài liệu</div>
+                <div class="col-md-8">
+                    <input type="checkbox" class="disabled" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Mã hàng</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo bảng màu</div>
+                <div class="col-md-8">
+                    <input type="checkbox" class="disabled" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Màu</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo COMMENT</div>
+                <div class="col-md-8">
+                    <input type="checkbox" class="disabled" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">SL Kiểm</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Số SP Đạt</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">SL Lỗi</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Số SP Lỗi</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Tỉ lệ % Lỗi</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control disabled" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Vị trí lỗi</th>
+                <th>Số lỗi</th>
+                <th>SP lỗi</th>
+                <th>SP sửa</th>
+                <th>Nguyên nhân</th>
+                <th>Cách khắc phục</th>
+                <th style="width: 50px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="row"><input type="button" value="Thêm dòng" class="btn btn-nostyle pull-right" /></div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Cỡ</th>
+                <th>TSKT</th>
+                <th>Dung sai</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>Ghi chú</th>
+                <th style="width: 50px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span>
+                        <i class="fa fa-2x fa-close red"></i>
+                    </span>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="row"><input type="button" value="Thêm dòng" class="btn btn-nostyle pull-right" /></div>
+</div>
+@*<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+</div>*@

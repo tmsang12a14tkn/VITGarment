@@ -1,0 +1,422 @@
+﻿@model Team
+@{
+    ViewBag.Title = "Màn hình " + Model.Name;
+    Layout = "~/Views/Shared/_DisplayOnlyLayout.cshtml";
+}
+<div ng-app="garmentApp" ng-controller="goalscontroller">
+    @* Màn hình hiện thị chính - Màn hình 1 *@
+    <div ng-show="settings.ScreenId == 1">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>MỤC TIÊU TRONG NGÀY / TRÊN GIỜ</b></h1>
+                        <h1 class="goal-value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity | number:0}} / {{goal.TotalQuantity/goal.TotalHour| number:0}}</b></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-col-5">
+            <div class="col-md-15 col-sm-3 box-1">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU LÚC {{goal.LastUpdatedHour}}</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedQuantity| number: 0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-2">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>THỰC TẾ LÚC {{goal.LastUpdatedHour}}</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity| number: 0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-3">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>LỆCH</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity - goal.LastUpdatedQuantity | abs | number:0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-4">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>THỜI GIAN CÒN LẠI</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TimeLeft}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-5">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU CUỐI NGÀY</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity - goal.LastUpdatedProduceQuantity| number: 0}}</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Màn hình hiện thị chi tiết theo giờ - Màn hình 2 *@
+    <div ng-show="settings.ScreenId == 2">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal scr-2">
+            <div class="col-sm-6 box-1">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>THỜI GIAN CÒN LẠI</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TimeLeft}}</b></span>
+                </div>
+            </div>
+            <div class="col-sm-6 box-2">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU CUỐI NGÀY</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity - goal.LastUpdatedProduceQuantity| number: 0}}</b></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><span></span></th>
+                                        <th class="text-center" ng-repeat="goaldetail in goal.GoalDetails">
+                                            <span><b>{{goaldetail.EndCountTimeString}}</b></span>
+                                        </th>
+                                        <th class="text-center">Tổng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center"><b>MỤC TIÊU</b></td>
+                                        <td class="text-center" ng-repeat="goaldetail in goal.GoalDetails"><b>{{goaldetail.Quantity| number: 0}}</b></td>
+                                        <td class="text-center"><b>{{goal.LastUpdatedQuantity| number: 0}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"><b>THỰC TẾ</b></td>
+                                        <td class="text-center" ng-repeat="goaldetail in goal.GoalDetails"><b ng-if="!goaldetail.IsPass">{{goaldetail.ProduceQuantity!=0 ? (goaldetail.ProduceQuantity| number: 0) : 'N/A'}}</b></td>
+                                        <td class="text-center"><b>{{goal.LastUpdatedProduceQuantity| number: 0}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center"><b>LỆCH</b></td>
+                                        <td class="text-center" ng-repeat="goaldetail in goal.GoalDetails"><span ng-class="goaldetail.ProduceQuantity >= goaldetail.Quantity? 'green': 'red'" ng-if="!goaldetail.IsPass"><b>{{goaldetail.ProduceQuantity && goaldetail.Quantity ? (goaldetail.ProduceQuantity - goaldetail.Quantity| number: 0): 'N/A'}}</b></span></td>
+                                        <td class="text-center" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity - goal.LastUpdatedQuantity | abs| number:0}}</b></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Màn hình hiện thị thông báo - Màn hình 3 *@
+    <div ng-show="settings.ScreenId == 3" class="goal-msg">
+        <span ng-style="settings.ThirdColor ? {'color': '#' + settings.ThirdColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.ThirdMessage}}
+        </span>
+    </div>
+
+    @* Màn hình hiển thị mục tiêu trong ngày/theo giờ - Màn hình 4*@
+    <div ng-show="settings.ScreenId == 4">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal sub-screen">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="sub-text">
+                            <h1><b>MỤC TIÊU TRONG NGÀY / TRÊN GIỜ</b></h1>
+                            <h1 class="goal-value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity | number: 0}} / {{goal.TotalQuantity/goal.TotalHour| number:0}}</b></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row goal-bonus-msg" ng-style="settings.FourthMessage && settings.FourthColor ? {'color': '#' + settings.FourthColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.FourthMessage ? settings.FourthMessage:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?"Cám ơn các bạn. Chúng ta đã đạt được kế hoạch":"Các bạn hãy cố gắng. Chúng ta chưa đạt kế hoạch" )}}
+        </div>
+    </div>
+
+    @* Màn hình hiển thị mục tiêu lúc.... - Màn hình 5*@
+    <div ng-show="settings.ScreenId == 5">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal sub-screen scr-5">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="sub-text">
+                            <h1><b>MỤC TIÊU LÚC {{goal.LastUpdatedHour}}</b></h1>
+                            <h1 class="goal-value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedQuantity| number: 0}}</b></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row goal-bonus-msg" ng-style="settings.FifthMessage && settings.FifthColor ? {'color': '#' + settings.FifthColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.FifthMessage?settings.FifthMessage:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?"Cám ơn các bạn. Chúng ta đã đạt được kế hoạch":"Các bạn hãy cố gắng. Chúng ta chưa đạt kế hoạch" )}}
+        </div>
+    </div>
+
+    @* Màn hình hiển thị Thực tế lúc... - Màn hình 6*@
+    <div ng-show="settings.ScreenId == 6">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal sub-screen scr-6">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="sub-text">
+                            <h1><b>THỰC TẾ LÚC {{goal.LastUpdatedHour}}</b></h1>
+                            <h1 class="goal-value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity | number: 0}}</b></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row goal-bonus-msg" ng-style="settings.SixthMessage && settings.SixthColor ? {'color': '#' + settings.SixthColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.SixthMessage ? settings.SixthMessage:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?"Cám ơn các bạn. Chúng ta đã đạt được kế hoạch":"Các bạn hãy cố gắng. Chúng ta chưa đạt kế hoạch" )}}
+        </div>
+    </div>
+
+    @* Màn hình hiển thị MỤC TIÊU CUỐI NGÀY - Màn hình 7*@
+    <div ng-show="settings.ScreenId == 7">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal sub-screen scr-7">
+            <div class="col-lg-12">
+                <div class="main-box clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="sub-text">
+                            <h1><b>MỤC TIÊU CUỐI NGÀY</b></h1>
+                            <h1 class="goal-value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity - goal.LastUpdatedProduceQuantity | number: 0}}</b></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row goal-bonus-msg" ng-style="settings.SeventhMessage && settings.SeventhColor ? {'color': '#' + settings.SeventhColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.SeventhMessage ?settings.SeventhMessage:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?"Cám ơn các bạn. Chúng ta đã đạt được kế hoạch":"Các bạn hãy cố gắng. Chúng ta chưa đạt kế hoạch" )}}
+        </div>
+    </div>
+
+    @* Màn hình hiển thị Lúc ..., Mục tiêu, Thực tế, Lệch - Màn hình 8*@
+    <div ng-show="settings.ScreenId == 8">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row daily-maingoal sub-screen">
+            <div class="col-lg-12">
+                <div class="main-box scr-8 clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="sub-text">
+                            <div class="col-md-4 col-sm-6 col-xs-12 box-1">
+                                <div class="main-box infographic-box">
+                                    <span class="headline"><b>MỤC TIÊU LÚC {{goal.LastUpdatedHour}}</b></span>
+                                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedQuantity | number: 0}}</b></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12 box-2">
+                                <div class="main-box infographic-box">
+                                    <span class="headline"><b>THỰC TẾ LÚC {{goal.LastUpdatedHour}}</b></span>
+                                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity | number: 0}}</b></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6 col-xs-12 box-3">
+                                <div class="main-box infographic-box">
+                                    <span class="headline"><b>LỆCH</b></span>
+                                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity - goal.LastUpdatedQuantity | abs | number:0}}</b></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row goal-bonus-msg" ng-style="settings.EighthMessage && settings.EighthColor? {'color': '#' + settings.EighthColor}:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?{'color':'#0b9b48'}:{'color':'#bd2212'})">
+            {{settings.EighthMessage ? settings.EighthMessage:(goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?"Cám ơn các bạn. Chúng ta đã đạt được kế hoạch":"Các bạn hãy cố gắng. Chúng ta chưa đạt kế hoạch" )}}
+        </div>
+    </div>
+
+    @* Màn hình 9 *@
+    <div ng-show="settings.ScreenId == 9" class="scr-9">
+        <div class="row daily-goal-header">
+            <div class="col-lg-12">
+                <div class="main-box clearfix" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'goal-up':'goal-down'">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <h1><b>{{goal.TeamName}} - MÃ HÀNG {{goal.ProductName}}</b></h1>
+                        <div class="goal-date">NGÀY {{today}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-maingoal">
+            <div class="col-sm-6 box-1">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>THỜI GIAN CÒN LẠI</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TimeLeft}}</b></span>
+                </div>
+            </div>
+            <div class="col-sm-6 box-2">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU CUỐI NGÀY</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity - goal.LastUpdatedProduceQuantity | number: 0}}</b></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row daily-col-5">
+            <div class="col-md-15 col-sm-3 box-1">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU NGÀY</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity | number: 0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-2">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU GIỜ</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.TotalQuantity/goal.TotalHour| number:0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-3">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>MỤC TIÊU LÚC {{goal.LastUpdatedHour}}</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedQuantity | number: 0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-4">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>THỰC TẾ LÚC {{goal.LastUpdatedHour}}</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity | number: 0}}</b></span>
+                </div>
+            </div>
+            <div class="col-md-15 col-sm-3 box-5">
+                <div class="main-box infographic-box">
+                    <span class="headline"><b>LỆCH</b></span>
+                    <span class="value" ng-class="goal.LastUpdatedProduceQuantity >= goal.LastUpdatedQuantity?'green':'red'"><b>{{goal.LastUpdatedProduceQuantity - goal.LastUpdatedQuantity|abs | number:0}}</b></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script src="~/Scripts/angular.min.js"></script>
+    @*<script src="~/Scripts/jquery.signalR-2.2.1.min.js"></script>
+    <script src="~/signalr/hubs"></script>*@
+    <script>
+        var app = angular.module("garmentApp", []);
+        var teamId = '@Model.Id';
+        Number.prototype.padLeft = function (base, chr) {
+            var len = (String(base || 10).length - String(this).length) + 1;
+            return len > 0 ? new Array(len).join(chr || '0') + this : this;
+        }
+        app.controller("goalscontroller", function ($scope, $interval, $http) {
+            var update = function () {
+                var now = new Date();
+                var date = [now.getDate().padLeft(),
+                            (now.getMonth() + 1).padLeft(),
+                            now.getFullYear()].join('/');
+                $http.get("/api/Goals/GoalFind?teamId=" + teamId + "&date=" + date)
+                .then(function (response) {
+                    $scope.goal = response.data;
+
+                    $scope.today = now.getDate() + '/' + (now.getMonth() + 1).padLeft();
+                });
+                $http.get("/api/TeamSettings/Get?teamId=" + teamId)
+               .then(function (response) {
+                   $scope.settings = response.data;
+               });
+            }
+            update();
+            $interval(update, 10000);
+            //$scope.settings = { ScreenId: 9 };
+        });
+        app.filter('abs', function () {
+            return function (val) {
+                return Math.abs(val);
+            }
+        });
+    </script>
+}

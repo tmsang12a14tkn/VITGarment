@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Garment.Mobile</RootNamespace>
+    <AssemblyName>Garment.Mobile</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\datepicker\default.css" />
+    <Content Include="css\datepicker\default.date.css" />
+    <Content Include="css\datepicker\default.time.css" />
+    <Content Include="css\font_awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="css\font_awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="css\font_awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="css\font_awesome\fonts\FontAwesome.otf" />
+    <Content Include="css\ionicons\fonts\ionicons.eot" />
+    <Content Include="css\ionicons\fonts\ionicons.ttf" />
+    <Content Include="css\ionicons\fonts\ionicons.woff" />
+    <Content Include="factorydetails.html" />
+    <Content Include="favicon.ico" />
+    <Content Include="js\highcharts.src.js" />
+    <Content Include="js\highstock.js" />
+    <Content Include="js\TeamEmployeeChartController.js" />
+    <Content Include="js\TeamErrorChart2Controller.js" />
+    <Content Include="js\TeamErrorChartController.js" />
+    <Content Include="js\TeamHourDetailsController.js" />
+    <Content Include="teamemployeechart.html" />
+    <Content Include="teamerrorchart2.html" />
+    <Content Include="teamerrorchart.html" />
+    <Content Include="factoryerrorchart.html" />
+    <Content Include="img\errors\hs.png" />
+    <Content Include="img\errors\lk.png" />
+    <Content Include="img\errors\mh.png" />
+    <Content Include="img\errors\nc.png" />
+    <Content Include="img\errors\nl.png" />
+    <Content Include="img\errors\pk.png" />
+    <Content Include="img\icons\production-red.png" />
+    <Content Include="img\icons\production-green.png" />
+    <Content Include="img\icons\timeline-red.png" />
+    <Content Include="img\icons\timeline-green.png" />
+    <Content Include="js\angular-datepicker.js" />
+    <Content Include="js\angular.easypiechart.js" />
+    <Content Include="js\angular.easypiechart.min.js" />
+    <Content Include="js\common.js" />
+    <Content Include="js\FactoryDetailsController.js" />
+    <Content Include="js\jquery.easypiechart.min.js" />
+    <Content Include="js\jquery.js" />
+    <Content Include="js\TeamDetailsController.js" />
+    <Content Include="res\.pgbomit" />
+    <None Include="Properties\PublishProfiles\m.portal.vitgarment.vn.pubxml" />
+    <None Include="Properties\PublishProfiles\m.vitgarment.vitcorp.vn.pubxml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="css\font_awesome\css\font-awesome.css" />
+    <Content Include="css\font_awesome\css\font-awesome.min.css" />
+    <Content Include="css\font_awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="css\index.css" />
+    <Content Include="css\ionicons\css\ionicons.css" />
+    <Content Include="css\ionicons\css\ionicons.min.css" />
+    <Content Include="css\ionicons\fonts\ionicons.svg" />
+    <Content Include="css\onsen-css-components-blue-basic-theme.css" />
+    <Content Include="css\onsen-css-components-blue-theme.css" />
+    <Content Include="css\onsen-css-components-dark-theme.css" />
+    <Content Include="css\onsen-css-components-default.css" />
+    <Content Include="css\onsen-css-components-purple-theme.css" />
+    <Content Include="css\onsen-css-components-sunshine-theme.css" />
+    <Content Include="css\onsen-css-components.css" />
+    <Content Include="css\onsen-css-components.min.css" />
+    <Content Include="css\onsenui.css" />
+    <Content Include="icon.png" />
+    <Content Include="img\g1.jpg" />
+    <Content Include="img\logo.png" />
+    <Content Include="img\move-to-next.png" />
+    <Content Include="index.html" />
+    <Content Include="js\AppController.js" />
+    <Content Include="js\highcharts.js" />
+    <Content Include="js\index.js" />
+    <Content Include="js\onsenui.js" />
+    <Content Include="js\onsenui.min.js" />
+    <Content Include="js\onsenui_all.js" />
+    <Content Include="js\onsenui_all.min.js" />
+    <Content Include="res\icon\android\drawable-hdpi-icon.png" />
+    <Content Include="res\icon\android\drawable-ldpi-icon.png" />
+    <Content Include="res\icon\android\drawable-mdpi-icon.png" />
+    <Content Include="res\icon\android\drawable-xhdpi-icon.png" />
+    <Content Include="res\icon\android\drawable-xxhdpi-icon.png" />
+    <Content Include="res\icon\android\drawable-xxxhdpi-icon.png" />
+    <Content Include="res\icon\ios\icon%402x.png" />
+    <Content Include="res\icon\ios\icon-40%402x.png" />
+    <Content Include="res\icon\ios\icon-40.png" />
+    <Content Include="res\icon\ios\icon-50%402x.png" />
+    <Content Include="res\icon\ios\icon-50.png" />
+    <Content Include="res\icon\ios\icon-60%402x.png" />
+    <Content Include="res\icon\ios\icon-60%403x.png" />
+    <Content Include="res\icon\ios\icon-60.png" />
+    <Content Include="res\icon\ios\icon-72%402x.png" />
+    <Content Include="res\icon\ios\icon-72.png" />
+    <Content Include="res\icon\ios\icon-76%402x.png" />
+    <Content Include="res\icon\ios\icon-76.png" />
+    <Content Include="res\icon\ios\icon-small%402x.png" />
+    <Content Include="res\icon\ios\icon-small%403x.png" />
+    <Content Include="res\icon\ios\icon-small.png" />
+    <Content Include="res\icon\ios\icon.png" />
+    <Content Include="res\icon\windows\Square150x150Logo.scale-100.png" />
+    <Content Include="res\icon\windows\Square150x150Logo.scale-240.png" />
+    <Content Include="res\icon\windows\Square30x30Logo.scale-100.png" />
+    <Content Include="res\icon\windows\Square310x310Logo.scale-100.png" />
+    <Content Include="teamdetails.html" />
+    <Content Include="teamhourdetails.html" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56410</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:56410/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

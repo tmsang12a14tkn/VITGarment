@@ -1,0 +1,123 @@
+﻿@model GoalFilterView
+
+@{
+    ViewBag.Title = "Theo dõi sản xuất";
+}
+
+<div class="row" ng-app="indexVideoModule" ng-controller="IndexVideoModuleCtrl">
+    <div class="col-lg-12">
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix">
+                <div class="row">
+                    <h2 class="pull-left"><b>Quản lý theo dõi sản xuất</b></h2>
+                </div>
+            </header>
+            <div class="main-box-body clearfix">
+                <div class="row">
+                    <ul id="myTab" class="nav nav-tabs" role="tablist">
+                        <li class="">
+                            <a href="/Goals/Index" class="glyphicon glyphicon-home"></a>
+                        </li>
+                        @*<li><input readonly id="dateselect" type="text" data-dateselected="@(Model.DateSelected.Day)@(Model.DateSelected.Month)@(Model.DateSelected.Year)" value=""></li>*@
+
+                                                  
+                            <li class="">
+                                <a href="/Goals/Index?date=@(Model.Begin.AddDays(-1).ToString("dd/MM/yyyy"))" class="glyphicon glyphicon-chevron-left"></a>
+                            </li>
+                            
+                            @for (DateTime d = Model.Begin; d <= Model.End ; d = d.AddDays(1))
+                            {
+                                
+                                <li class="@( Model.SelectDate == null ? DateTime.Compare(d.Date, Model.Begin) == 0 ? "active" : "" : DateTime.Compare(d.Date, Model.SelectDate.Value.Date) == 0 ? "active" : "")">
+                                    <a href="#videotab@(d.ToString("dd-MM-yyyy"))" role="tab" data-toggle="tab">
+                                        <b>@(d.DayOfWeek != DayOfWeek.Sunday? "Thứ " + ((int)d.DayOfWeek + 1) : "Chủ nhật ")</b>
+                                        <span style="font-size: 14px"> @d.ToShortDateString()</span>
+                                    </a>
+                                </li>
+                            }
+                            
+                            <li class="">
+                                <a href="/Goals/Index?date=@(Model.End.AddDays(1).ToString("dd/MM/yyyy"))" class="glyphicon glyphicon-chevron-right"></a>
+                            </li>
+
+
+                    </ul>
+
+                    <div id="myTabContent" class="tab-content">
+                        @for (DateTime d = Model.Begin; d <= Model.End; d = d.AddDays(1))
+                        {
+                            var check = Model.SelectDate == null ? DateTime.Compare(d.Date, Model.Begin) : DateTime.Compare(d.Date, Model.SelectDate.Value.Date);
+                            
+                            <div class="tab-pane fade @(check == 0 ? "active in" : "")" id="videotab@(d.ToString("dd-MM-yyyy"))">
+                                <div class="row">
+                                    <div class="table-responsive">
+                                        <table class="table user-list table-hover" id="manage_video">
+                                            <thead>
+                                                <tr>
+                                                    <th><span>Đội nhóm</span></th>
+                                                    <th><span>Sản phẩm</span></th>
+                                                    <th><span>Mục tiêu</span></th>
+                                                    <th><span>Thực tế</span></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            
+                                            @*@Html.Partial("_ListGoals", goal)*@
+                                            @foreach (GoalTabFilterView g in Model.GoalTabFilterViews)
+                                            {
+                                                if (g.GoalDate.Date == d.Date.Date)
+                                                {
+                                                    <thead class="theadvideo" id="theadvideo">
+                                                        <tr>
+                                                            <th><h2><b>@g.Factory.Name</b></h2></th>
+                                                            <th><span></span></th>
+                                                            <th><span></span></th>
+                                                            <th><span></span></th>
+                                                            <th><span></span></th>
+                                                        </tr>
+                                                    </thead>
+
+
+                                                    <tbody>
+                                                        @foreach (Goal goalTeam in g.Goals)
+                                                        {
+                                                            <tr class="tbodyvideo">
+                                                                <td>
+                                                                    <p style="word-wrap: break-word;font-size: 13px"><b>@goalTeam.Team.Name</b></p>
+                                                                </td>
+                                                                @*@Html.Action("GetGoalDetailQuantity", new { goalid = goalTeam.Id })*@
+
+                                                                <td>
+                                                                    <a href="/man-hinh/@goalTeam.TeamId" target="_blank" class="table-link gray" title="Màn hình hiên thị">
+                                                                        <span class="fa-stack">
+                                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                                            <i class="fa fa-desktop fa-stack-1x fa-inverse"></i>
+                                                                        </span>
+                                                                    </a>
+
+                                                                    <a href="/nhap?teamId=@goalTeam.TeamId" target="_blank" class="table-link gray" title="Màn hình nhập liệu">
+                                                                        <span class="fa-stack">
+                                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                                        </span>
+                                                                    </a>
+
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                }
+
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

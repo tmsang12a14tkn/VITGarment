@@ -1,0 +1,14 @@
+﻿@model IEnumerable<QCTeam>
+
+<span id="qcTeamList-@ViewBag.teamId" class="qc-team-list" data-id="@ViewBag.teamId">
+    @foreach (var qcTeam in Model)
+    {
+        <button class="btn btn-primary" 
+                data-toggle="popover" 
+                data-trigger="focus" 
+                data-placement="top" 
+                data-content="<button class='btn btn-default btn-editqcteam' data-toggle='modal' data-target='#addQCModal' data-href='/QCTeam/_Edit?teamId=@qcTeam.TeamId&qcId=@qcTeam.QCId'>Sửa</button>&nbsp;&nbsp;<button data-toggle='modal' data-target='#addQCModal' data-href='/QCTeam/_Delete?teamId=@qcTeam.TeamId&qcId=@qcTeam.QCId' class='btn btn-default btn-delete'>Xóa</button>" 
+                data-html="true">@qcTeam.QC.Type</button>
+    }
+</span>
+     

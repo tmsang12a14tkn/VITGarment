@@ -1,0 +1,122 @@
+﻿@model Team
+@{
+    ViewBag.Title = "TeamChart";
+}
+
+<h2>@Model.Name</h2>
+<div class="row">
+    <div id="chart" class="col-md-9"></div>
+    <div class="col-md-3">
+        <input type="text" class="form-control" name="daterange" id="daterange" />
+        <div id="fixed-tooltip">
+            <h4 class="title"></h4>
+            <p class="content"></p>
+            <p class="buttons"></p>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+    
+    <link href="~/Content/daterangepicker.css" rel="stylesheet" />
+}
+@section Scripts
+{
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/daterangepicker.js"></script>
+    <script src="~/Scripts/highcharts/highcharts.js"></script>
+    <script>
+    var chartOptions = {
+        chart: { type: 'spline', animation: false },
+        title: { text: 'Biểu đồ thống kê sản xuất' },
+        tooltip:
+        {
+            valueDecimals: 2,
+            formatter: function () {
+
+                var s = 'Ngày ' + Highcharts.dateFormat('%d/%m/%Y', this.x) + '<br/><span style="font-weight:bold; color:' + this.series.color + '">' + this.series.name + '</span>: ' + this.point.y;
+                return s;
+            }
+        },
+        xAxis:
+       {
+           type: 'datetime',
+           dateTimeLabelFormats:
+           {
+               millisecond: '%H:%M:%S.%L',
+               second: '%H:%M:%S',
+               minute: '%H:%M',
+               hour: '%H:%M',
+               day: '%e/%b',
+               week: '%e/%b',
+               month: '%b/%y',
+               year: '%Y'
+           }
+       },
+        yAxis: {
+            title: {
+                text: 'Số lượng'
+            }
+
+        },
+        plotOptions:
+        {
+            series:
+            {
+                point:
+                {
+                    events:
+                    {
+                        click: function (e) {
+                            console.log("click", this);
+                            var selectedDate = Highcharts.dateFormat('%d/%m/%Y', this.x);
+                            var teamid = this.series.options.id;
+                            var $fixedTooltip = $("#fixed-tooltip");
+                            var link = '#';
+
+                            $fixedTooltip.show();
+                            $fixedTooltip.find(".title").html(this.series.name + " - " + selectedDate);
+                            $fixedTooltip.find(".content").html('Sản xuất: ' + this.y);
+                            $fixedTooltip.find(".buttons").html('<a href="' + link + '" class="btn btn-default">Xem chi tiết</a>');
+                        }
+                    }
+                }
+            }
+        },
+
+    };
+
+    var today = moment(new Date());
+    var dateTemp = moment(new Date(today.year(), today.month(), 1))
+    var from = dateTemp.format('DD/MM/YYYY');
+    var to = dateTemp.add(1, 'months').add(-1, 'days').format('DD/MM/YYYY');
+
+    drawChart();
+
+    var pickerRange = $('#daterange').daterangepicker({
+        locale: {
+            format: 'DD/MM/YYYY'
+        },
+        startDate: from,
+        endDate: to,
+        opens: 'left',
+    });
+    $('#daterange').on("apply.daterangepicker", function (ev, picker) {
+        from = $('#daterange').data('daterangepicker').startDate.format('DD/MM/YYYY');
+        to = $('#daterange').data('daterangepicker').endDate.format('DD/MM/YYYY');
+        drawChart();
+
+    });
+
+    function drawChart() {
+        $.getJSON("/api/Analytics/SingleTeamChart?from=" + from + "&to=" + to + "&id=@Model.Id", function (data) {
+                chartOptions.series = data;
+                $("#chart").highcharts(chartOptions);
+            })
+
+           
+        }
+
+    </script>
+}
+

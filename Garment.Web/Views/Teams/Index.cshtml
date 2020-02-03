@@ -1,0 +1,117 @@
+﻿@model IEnumerable<Data.Models.Team>
+
+@{
+    ViewBag.Title = "Quản lý đội nhóm";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix">
+                <h2 class="pull-left"><b>Quản lý đội nhóm</b></h2>
+                <div class="navbar-form navbar-right" role="search" id="formsearch">
+                @using (Html.BeginForm("Index", "Teams", FormMethod.Get))
+                {
+                    <div class="form-group">
+                        <select class="form-control" id="" name="factoryid">
+                            <option value="0" @(ViewBag.factoryid == 0 ? "selected" : "")>Tất cả</option>
+                            @foreach (var f in ViewBag.factories)
+                            {
+                                <option value="@f.Id" @(f.Id == ViewBag.factoryid ? "selected" : "")>@f.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary" id="filterBtn">
+                            <span class="fa fa-filter"></span> Lọc
+                        </button>
+                    </div>
+                
+                    <div class="form-group">
+                        <a href="/Teams/Create" title="Tạo mới sản phẩm" class="btn btn-success pull-right">
+                            <i class="fa fa-plus fa-lg"></i> Tạo mới đội nhóm
+                        </a>
+                    </div>
+                }
+                </div>
+            </header>
+            <div class="main-box-body clearfix">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table user-list table-hover" id="manage_video">
+                            <thead>
+                                <tr>
+                                    <th><span>Tên</span></th>
+                                    <th><span>Số công nhân</span></th>
+                                    <th><span>Trực thuộc</span></th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodytvc" class="sortableteamgroup">
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="item_@item.Id">
+                                        <td>
+                                            @item.Name
+                                        </td>
+                                        <td>
+                                            @item.NoEmployee
+                                        </td>
+                                        <td>
+                                            @(item.Factory != null ? item.Factory.Name : "")
+                                        </td>
+                                        <td>
+                                            <a href="/Teams/Edit/@item.Id" class="table-link gray" title="Chỉnh sửa">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a href="/Teams/Delete/@item.Id" class="table-link danger" title="Xóa" data-toggle="modal" data-target="#deleteTeamModal"
+                                               data-ajax="true"
+                                               data-ajax-complete=""
+                                               data-ajax-mode="replace"
+                                               data-ajax-update="#deleteTeamContent">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="deleteTeamModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="deleteTeamContent">
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        function OnDeleteSuccess(data) {
+            if (data.success == true) {
+                $("#deleteTeamModal").modal("hide");
+                $("#deleteTeamModal").empty();
+                $("#item_" + data.id).remove();
+            }
+            else {
+                alert(data.error);
+            }
+        }
+        
+
+    </script>
+
+}

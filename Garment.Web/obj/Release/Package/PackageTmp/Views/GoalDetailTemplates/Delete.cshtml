@@ -1,0 +1,25 @@
+﻿@model Data.Models.GoalDetailTemplate
+
+@using (Ajax.BeginForm("Delete", "GoalDetailTemplates", new { id = Model.Id }, new AjaxOptions
+{
+    HttpMethod = "post",
+    OnSuccess = "onSuccessDeleteProSche"
+}, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Đóng</span></button>
+        <h4 class="modal-title">Bạn có muốn xoá giờ sản xuất từ @Model.StartCountTime đến @Model.EndCountTime của ngày @((int)Model.DayOfWeek == 0 ? "Chủ nhật" : "thứ " + ((int)Model.DayOfWeek + 1)) không ?</h4>
+    </div>
+    <div class="modal-body">
+        
+        <div class="form-group">
+            <input type="text" class="form-control" name="confirmText" placeholder="Nhập 'Đồng ý'" />
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Đồng ý</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Huỷ</button>
+    </div>
+}
+

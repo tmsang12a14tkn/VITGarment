@@ -1,0 +1,86 @@
+﻿@model QCTeamModel
+@{ 
+    List<QC> qcs = ViewBag.qcs;
+}
+
+@using (Ajax.BeginForm("_CreateOrEdit", new AjaxOptions
+{
+    HttpMethod = "Post",
+    OnSuccess = "onSuccessCreateEditQCTeam"
+}))
+{
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Chọn báo cáo QC</h4>
+</div>
+<div class="modal-body">
+    <div class="form-group row">
+        @Html.LabelFor(model => model.From, new { @class = "col-md-2" })
+        <div class="col-md-10">
+            @*@Html.TextBoxFor(mode => Model.From, new { @class = "form-control" })*@
+            @Html.EditorFor(model => model.From, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
+        </div>
+       
+    </div>
+    <div class="form-group row">
+        @Html.LabelFor(model => model.To, new { @class = "col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.To, new { htmlAttributes = new { @class = "form-control datetimepicker" } })
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="qc-search" class="col-md-2">Tìm kiếm</label>
+        <div class="col-md-10">
+            <div class="input-group">
+                <input type="text" class="form-control" id="qc-search" name="Search" placeholder="Tìm kiếm">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Loại</th>
+                    <th>Mã</th>
+                    <th>Nhà cùng cấp</th>
+                    <th>Xem trước</th>
+                </tr>
+            </thead>
+            <tbody id="qc-list">
+                @foreach (QC qc in qcs)
+                {
+                <tr id="qc-@qc.Id" data-id="@qc.Id">
+                    <td>@qc.Name</td>
+                    <td>@qc.Type</td>
+                    <td>@qc.Code</td>
+                    <td>@qc.Supplier</td>
+                    <td>
+                        <a href="#" data-toggle="modal" data-target="#qcPreviewModal" data-href="/QCReport/_QCReportPreview?qcId=@qc.Id" class="btn btn-primary">
+                            <span class="fa fa-eye"></span>
+                        </a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        <div class="checkbox-nice">
+            @*<input type="checkbox" id="checkbox-applyAll" name="ApplyAll" checked="" value="false">*@
+            <input data-val="true" id="ApplyAll" name="ApplyAll" type="checkbox" value="true">
+            @*@Html.CheckBoxFor(model=>model.ApplyAll)*@
+            <label for="ApplyAll">
+                ÁP dụng cho toàn xí nghiệp
+            </label>
+            <input name="ApplyAll" type="hidden" value="false">
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    @Html.HiddenFor(model => model.TeamId)
+    @Html.HiddenFor(model => model.QCId)
+    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+</div>
+}

@@ -1,0 +1,116 @@
+﻿@using Microsoft.AspNet.Identity
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - VIT Garment</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+    <link href="~/Content/layout.css" rel="stylesheet" />
+    <link href="~/Content/elements.css" rel="stylesheet" />
+
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet">
+
+    <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,700italic,300,300italic,400italic,600italic,900,900italic&subset=latin,vietnamese' rel='stylesheet' type='text/css'>
+
+    @RenderSection("Styles", false)
+
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+    <div id="page-wrapper" class="container">
+        <div id="content-wrapper" class="daily-goal">
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.1.0.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/MicrosoftAjax.js"></script>
+    <script src="~/Scripts/MicrosoftMvcAjax.js"></script>
+    <script src="~/Scripts/MicrosoftMvcValidation.js"></script>
+
+    <script src="~/Scripts/jquery.ui.widget.js"></script>
+    <script src="~/Scripts/jquery.iframe-transport.js"></script>
+    <script src="~/Scripts/jquery.fileupload.js"></script>
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+
+    <script src="~/Scripts/jquery-ui.min.js"></script>
+    <script src="~/Scripts/demo-skin-changer.js"></script>
+    <script src="~/Scripts/jquery.nanoscroller.min.js"></script>
+    <script src="~/Scripts/demo.js"></script>
+    <script src="~/Scripts/scripts.js"></script>    
+
+    @RenderSection("Scripts", false)
+
+    <script>
+
+        $(document).ready(function () {
+            function fix_height() {
+                var h = $("#tray").height();
+                $("#preview").attr("height", (($(window).height()) - h) + "px");
+            }
+            $(window).resize(function () { fix_height(); }).resize();
+
+            // Scroll to top button
+            $(window).scroll(function () { // hide/show button when page is scrolled
+                if ($(this).scrollTop() > 200) {
+                    $('#toTop').fadeIn();
+                } else {
+                    $('#toTop').fadeOut();
+                }
+            });
+
+            $('#toTop').click(function () {
+                $('body,html').animate({ scrollTop: 0 }, 800);
+            });
+
+        });
+
+        $(function () {
+            jQuery('.datetimepicker').datetimepicker(
+                {
+                    format: 'd/m/Y H:i'
+                });
+
+            jQuery('.datepicker').datetimepicker(
+                {
+                    format: 'd/m/Y',
+                    timepicker: false
+                });
+
+            jQuery('.timepicker').datetimepicker(
+                {
+                    datepicker: false,
+                    format: 'H:i',
+                    allowTimes: ['00:00', '00:15', '00:30', '00:45', '1:00', '1:15', '1:30', '1:45', '2:00', '2:15', '2:30', '2:45', '3:00', '3:15', '3:30', '3:45', '4:00', '4:15', '4:30', '4:45', '5:00', '5:15', '5:30', '5:45', '6:00', '6:15', '6:30', '6:45', '7:00', '7:15', '7:30', '7:45', '8:00', '8:15', '8:30', '8:45', '9:00', '9:15', '9:30', '9:45', '10:00', '10:15', '10:30', '10:45', '11:00', '11:15', '11:30', '11:45', '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45', '14:00', '14:15', '14:30', '14:45', '15:00', '15:15', '15:30', '15:45', '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:30', '17:45', '18:00', '18:15', '18:30', '18:45', '19:00', '19:15', '19:30', '19:45', '20:00', '20:15', '20:30', '20:45', '21:00', '21:15', '21:30', '21:45', '22:00', '22:15', '22.30', '22:45', '23:00', '23:15', '23:30', '23:45']
+                });
+
+            // fix date validation for chrome
+            jQuery.extend(jQuery.validator.methods, {
+                date: function (value, element) {
+                    var isChrome = window.chrome;
+                    // make correction for chrome
+                    if (isChrome) {
+                        //console.log("chrome", value);
+                        //var d = new Date();
+                        return true; //this.optional(element) ||!/Invalid|NaN/.test(new Date(d.toLocaleDateString("2014/12/12")));
+                    }
+                        // leave default behavior
+                    else {
+                        return this.optional(element) ||
+                            !/Invalid|NaN/.test(new Date(value));
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

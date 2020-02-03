@@ -1,0 +1,764 @@
+﻿@model Data.Models.Goal
+
+@{
+    ViewBag.Title = "Nhập liệu " + (Model.Team != null ? Model.Team.Name : ""); ;
+    var isAdmin = User.IsInRole("Admin");
+}
+
+<div class="row">
+    <div ng-app="garmentApp" ng-controller="goalscontroller">
+        <div class="main-box">
+            <div class="main-box-header">
+                <h1><b>{{goal.TeamName}} - Ngày @Model.GoalDate.ToString("dd/MM/yyyy")</b></h1>
+                @if(isAdmin)
+                { 
+                    <a href="@Url.Action("Admin", "Goals", new { teamId = Model.TeamId})" target="_blank" class="btn btn-success" >Quản trị</a>
+                }
+            </div>
+
+            <div class="main-box-body">
+                <div class="tabs-wrapper">
+                    <ul class="nav nav-tabs">
+                        @*<li class="active"><a href="#tab-input" data-toggle="tab">Nhập dữ liệu</a></li>*@
+                        <li class="active"><a href="#tab-display" data-toggle="tab">Hiển thị</a></li>
+                        <li class=""><a href="#tab-annouce" data-toggle="tab">Thông báo</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        @*<div class="tab-pane fade active in" id="tab-input">
+                            <div class="form-horizontal clearfix">                               
+                                <div class="row">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="5%">Giờ</th>
+                                                <th class="text-center" width="5%">Số phút</th>
+                                                <th class="text-center" width="5%">Mục tiêu</th>
+                                                <th class="text-center" width="5%">Thực tế</th>
+                                                <th class="text-center" width="6%">Mã hàng</th>
+                                                <th class="text-center" width="5%">Số nhân công</th>
+                                                <th class="text-center" width="10%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                                @if (isAdmin)
+                                                {
+                                                    <th class="text-center" width="5%">Phiên bản</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="goaldetail in goal.GoalDetails">
+                                                <td>{{goaldetail.StartCountTimeString}} - {{goaldetail.EndCountTimeString}}</td>
+                                                <td>
+                                                    <input type="number" class="form-control" ng-model="goaldetail.TotalMinutes" hide-zero />
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control" ng-model="goaldetail.Quantity" hide-zero />
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control" ng-model="goaldetail.ProduceQuantity" hide-zero />
+                                                </td>
+                                                <td>
+                                                    <input name="ProductId" class="form-control" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="goaldetail.ProductId" />
+                                                    
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control" ng-model="goaldetail.NoEmployee" hide-zero />
+                                                    
+                                                </td>
+                                                <td>
+                                                    <select name="ReasonId" ng-model="goaldetail.ReasonId"
+                                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                                            class="form-control">
+                                                        <option></option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea style="word-wrap: normal;" class="form-control" wrap="soft" ng-model="goaldetail.Comment"></textarea>
+                                                </td>
+                                                @if(isAdmin)
+                                                {
+                                                    <td>
+                                                        <a href="#modal-revisions-{{goaldetail.Id}}" data-toggle="modal">{{goaldetail.Revisions.length}}</a>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="form-group" style="position: fixed; bottom: 8%; right: 40px;">
+                                    <div class="col-md-12">
+                                        <a class="btn btn-primary btn-left" href="/man-hinh/@Model.TeamId" target="_blank">
+                                            <i class="fa fa-desktop"></i>
+                                            Màn hình hiển thị
+                                        </a>
+                                        <button type="button" class="btn btn-success" ng-click="saveGoal()">
+                                            <i class="fa fa-save"></i>
+                                            Lưu thay đổi
+                                        </button>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                            <modal ng-repeat="goaldetail in goal.GoalDetails" data="goaldetail" title="Nhập sản lượng của Tổ/Nhóm" id="modal-goaldetails-{{goaldetail.Id}}">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã nhân viên</th>
+                                            <th>Nhân viên</th>
+                                            <th>Số lượng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="ph in goaldetail.ProduceHistories" ng-class="ph.OldQuantity != ph.Quantity?'warning':''">
+                                            <td>{{ph.EmployeeId}}</td>
+                                            <td>{{ph.EmployeeName}}</td>
+                                            <td>
+                                                <input type="number" ng-change="changeEmployeeQuantity(goaldetail)" ng-model="ph.Quantity" />
+                                                <span ng-if="ph.OldQuantity && ph.OldQuantity != ph.Quantity">Số liệu cũ là {{ph.OldQuantity}}</span>
+                                            </td>
+
+                                        </tr>
+                                        <tr id="newEmployeeRow-{{goaldetail.Id}}">
+                                            <td colspan="2">
+                                                <input type="text" class="newEmployee form-control hidden" ng-model="goaldetail.NewEmployee" />
+                                            </td>
+                                            <td>
+                                                <input type="number" class="" ng-model="goaldetail.NewEmpQuantity" />
+                                                <input type="checkbox" id="empForAll-{{goaldetail.Id}}" /><label for="empForAll-{{goaldetail.Id}}">Thêm cho tất cả</label>
+                                                <button class="pull-right btn btn-success btn-sm btn-addemployee"><i class="fa fa-plus"></i> Thêm</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>
+                                                Tổng
+                                            </th>
+                                            <th colspan="2">
+                                                {{goaldetail.CompProduceQuantity}}
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                Tổng tự nhập
+                                            </th>
+                                            <th colspan="2">
+                                                <input type="number" ng-model="goaldetail.ManualProduceQuantity" hide-zero ng-change="changeProduceQuantity(goaldetail)" />
+                                                <span ng-if="goaldetail.ProduceQuantity != goaldetail.CompProduceQuantity">Lệch {{goaldetail.ProduceQuantity - goaldetail.CompProduceQuantity}}</span>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </modal>
+
+                            <modal-revisions ng-repeat="goaldetail in goal.GoalDetails" data="goaldetail.Revisions" title="Các phiên bản đã lưu" id="modal-revisions-{{goaldetail.Id}}">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Thời gian</th>
+                                            <th>Phút</th>
+                                            <th>Tài khoản</th>
+                                            <th>Mục tiêu</th>
+                                            <th>Thực tế</th>
+                                            <th>Số nhân công</th>
+                                            <th>Lý do</th>
+                                            <th>Mã hàng</th>
+                                            <th>Ghi chú</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="rv in goaldetail.Revisions">
+                                            <td>{{rv.DateTime}}</td>
+                                            <td>{{rv.TotalMinutes}}</td>
+                                            <td>{{rv.UserName}}</td>
+                                            <td>{{rv.Quantity}}</td>
+                                            <td>
+                                                {{rv.ProduceQuantity}}
+                                            </td>
+                                            <td>{{rv.NoEmployee}}</td>
+                                            <td>{{rv.Reason}}</td>
+                                            <td>{{rv.ProductId}}</td>
+                                            <td>{{rv.Comment}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </modal-revisions>
+                        </div>*@
+                        <div class="tab-pane fade active in" id="tab-display">
+                            <div class="row">
+                                <div class="main-box">
+                                    <div class="main-box-header clearfix">
+                                        <h2 class="text-center"><b>Hiển thị màn hình khác</b></h2>
+                                    </div>
+                                    <div class="main-box-body clearfix">
+                                        <form role="form">
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label"><b>Màn hình mặc định</b></label>
+                                                        <select ng-model="settings.PrimaryScreenId" class="form-control" convert-to-number>
+                                                            <option selected value="1">MH Tổng quan 01</option>
+                                                            <option selected value="9">MH Tổng quan 02</option>
+                                                            <option selected value="2">MH Theo giờ</option>
+                                                            <option selected value="4">MH Mục tiêu trong ngày/giờ</option>
+                                                            <option selected value="5">MH Mục tiêu theo giờ</option>
+                                                            <option selected value="6">MH Thực tế theo giờ</option>
+                                                            <option selected value="7">MH Kế hoạch phải đạt</option>
+                                                            <option selected value="8">MH Mục tiêu - thực tế - lệch theo giờ</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-9"></div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label"><b>Chế độ</b></label>
+                                                        <select ng-model="settings.DisplayMode" convert-to-number class="form-control">
+                                                            <option selected value="0">Bình thường</option>
+                                                            <option value="1">Tự động</option>
+                                                            <option value="2">Một lần</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-9"></div>
+                                            </div>
+
+                                            <div class="col" ng-show="settings.DisplayMode == 1">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-center">Màn hình</th>
+                                                            <th width="10%" class="text-center">Thời gian</th>
+                                                            <th width="50%" class="text-center">Thông báo</th>
+                                                            <th width="10%" class="text-center">Màu</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>MH Tổng quan 01</td>
+                                                            <td><input type="number" name="FirstScreenTime" ng-model="settings.FirstScreenTime" class="form-control" /></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Tổng quan 02</td>
+                                                            <td><input type="number" name="NinthScreenTime" ng-model="settings.NinthScreenTime" class="form-control" /></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Theo giờ</td>
+                                                            <td><input type="number" name="SecondScreenTime" ng-model="settings.SecondScreenTime" class="form-control" /></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Mục tiêu trong ngày/giờ</td>
+                                                            <td>
+                                                                <input type="number" ng-model="settings.FourthScreenTime" class="form-control" />
+                                                            </td>
+                                                            <td><input type="text" name="FourthMessage" ng-model="settings.FourthMessage" class="form-control" /></td>
+                                                            <td><input type="text" name="FourthColor" ng-model="settings.FourthColor" class="form-control jscolor {required:false}" /></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Mục tiêu theo giờ</td>
+                                                            <td>
+                                                                <input type="number" ng-model="settings.FifthScreenTime" class="form-control" />
+                                                            </td>
+                                                            <td><input type="text" name="FifthMessage" ng-model="settings.FifthMessage" class="form-control" /></td>
+                                                            <td><input type="text" name="FifthColor" ng-model="settings.FifthColor" class="form-control jscolor {required:false}" /></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Thực tế theo giờ</td>
+                                                            <td>
+                                                                <input type="number" ng-model="settings.SixthScreenTime" class="form-control" />
+                                                            </td>
+                                                            <td><input type="text" name="SixthMessage" ng-model="settings.SixthMessage" class="form-control" /></td>
+                                                            <td><input type="text" name="SixthColor" ng-model="settings.SixthColor" class="form-control jscolor {required:false}" /></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Kế hoạch phải đạt</td>
+                                                            <td>
+                                                                <input type="number" ng-model="settings.SeventhScreenTime" class="form-control" />
+                                                            </td>
+                                                            <td><input type="text" name="SeventhMessage" ng-model="settings.SeventhMessage" class="form-control" /></td>
+                                                            <td><input type="text" name="SeventhColor" ng-model="settings.SeventhColor" class="form-control jscolor {required:false}" /></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>MH Mục tiêu - thực tế - lệch theo giờ</td>
+                                                            <td>
+                                                                <input type="number" ng-model="settings.EighthScreenTime" class="form-control" />
+                                                            </td>
+                                                            <td><input type="text" name="EighthMessage" ng-model="settings.EighthMessage" class="form-control" /></td>
+                                                            <td><input type="text" name="EighthColor" ng-model="settings.EighthColor" class="form-control jscolor {required:false}" /></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+
+
+                                            </div>
+
+                                            <div class="row" ng-show="settings.DisplayMode == 2">
+                                                <div class="col-lg-3">
+                                                    <div class="form-group">
+                                                        <label class="control-label"><b>Màn hình</b></label>
+                                                        <select ng-model="settings.SecondaryScreenId" class="form-control" convert-to-number>
+                                                            <option selected value="1">MH Tổng quan 01</option>
+                                                            <option selected value="9">MH Tổng quan 02</option>
+                                                            <option selected value="2">MH Theo giờ</option>
+                                                            <option selected value="4">MH Mục tiêu trong ngày/giờ</option>
+                                                            <option selected value="5">MH Mục tiêu theo giờ</option>
+                                                            <option selected value="6">MH Thực tế theo giờ</option>
+                                                            <option selected value="7">MH Kế hoạch phải đạt</option>
+                                                            <option selected value="8">MH Mục tiêu - thực tế - lệch theo giờ</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-group" ng-show="settings.SecondaryScreenId==4">
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thông báo</b></label>
+                                                            <input type="text" name="FourthMessage" ng-model="settings.FourthMessage" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Màu</b></label>
+                                                            <input type="text" name="FourthColor" ng-model="settings.FourthColor" class="form-control jscolor {required:false}" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" ng-show="settings.SecondaryScreenId==5">
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thông báo</b></label>
+                                                            <input type="text" name="FifthMessage" ng-model="settings.FifthMessage" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Màu</b></label>
+                                                            <input type="text" name="FifthColor" ng-model="settings.FifthColor" class="form-control jscolor {required:false}" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" ng-show="settings.SecondaryScreenId==6">
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thông báo</b></label>
+                                                            <input type="text" name="SixthMessage" ng-model="settings.SixthMessage" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Màu</b></label>
+                                                            <input type="text" name="SixthColor" ng-model="settings.SixthColor" class="form-control jscolor {required:false}" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" ng-show="settings.SecondaryScreenId==7">
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thông báo</b></label>
+                                                            <input type="text" name="SeventhMessage" ng-model="settings.SeventhMessage" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Màu</b></label>
+                                                            <input type="text" name="SeventhColor" ng-model="settings.SeventhColor" class="form-control jscolor {required:false}" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group" ng-show="settings.SecondaryScreenId==8">
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thông báo</b></label>
+                                                            <input type="text" name="EighthMessage" ng-model="settings.EighthMessage" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Màu</b></label>
+                                                            <input type="text" name="EighthColor" ng-model="settings.EighthColor" class="form-control jscolor {required:false}" />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label"><b>Thời gian</b></label>
+                                                            <input type="number" name="SecondaryScreenTime" ng-model="settings.SecondaryScreenTime" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-9"></div>
+                                            </div>
+
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <button class="btn btn-success" ng-click="showSecondaryScreen()">
+                                                        <i class="fa fa-check"></i> Bắt đầu hiển thị
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="tab-annouce" class="tab-pane fade">
+                            <div class="main-box">
+                                <div class="main-box-header clearfix">
+                                    <h2 class="text-center"><b>Màn hình thông báo</b></h2>
+                                </div>
+                                <div class="main-box-body clearfix">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label class="control-label"><b>Lời nhắn</b></label>
+                                            <textarea name="ThirdMessage" ng-model="settings.ThirdMessage" class="form-control" row="5"></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label"><b>Thời gian</b></label>
+                                            <input type="number" name="SecondaryScreenTime" ng-model="settings.SecondaryScreenTime" class="form-control" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label"><b>Màu</b></label>
+                                            <input type="text" name="ThirdColor" ng-model="settings.ThirdColor" class="form-control jscolor {required:false}" />
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-success" ng-click="showMessageScreen()">
+                                                <i class="fa fa-check"></i>
+                                                Bắt đầu hiển thị
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/Content/angular-datetime-picker.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/angular-datetime-picker.js"></script>
+    <script src="~/Scripts/bootstrap3-typeahead.js"></script>
+    @*<script src="~/Scripts/typeahead.bundle.js"></script>*@
+    <script src="~/Scripts/bootstrap-tagsinput.js"></script>
+    <script src="~/Scripts/bootstrap-tagsinput-angular.min.js"></script>
+    <script src="~/Scripts/jscolor.min.js"></script>
+
+    <script>
+        var app = angular.module("garmentApp", ['bootstrap-tagsinput', 'angularjs-datetime-picker']);
+        var date = '@Model.GoalDate.ToString("dd/MM/yyyy")';
+        var teamId = '@Model.TeamId'
+        var dow = @((int)Model.GoalDate.DayOfWeek);
+        //var now = new Date();
+        //var dow = now.getDay();
+
+
+        app.controller("goalscontroller", function ($scope, $http) {
+
+            var checkValidProduct = function (goaldetail) {
+                if (goaldetail.ManualProduceQuantity == 0) {
+                    goaldetail.ValidProduct = true;
+                    return;
+                }
+
+                for (var i = 0; i < $scope.products.length; i++) {
+                    if ($scope.products[i].ProductId == goaldetail.ProductId) {
+                        goaldetail.ValidProduct = true;
+                        return;
+                    }
+
+                }
+                goaldetail.ValidProduct = false;
+            }
+
+            $scope.queryEmployees = function (query) {
+                return $http.get('/api/Employees/GetAll');
+            };
+
+            $http.get("/api/Products/GetAll").then(function (response) {
+                $scope.products = response.data;
+            });
+            $http.get("/api/Reasons/GetAll").then(function (response) {
+                $scope.reasons = response.data;
+            });
+
+            $http.get("/api/Goals/Find?teamId=" + teamId + "&date=" + date).then(function (response) {
+                $scope.goal = response.data;
+                console.log($scope.goal);
+                if ($scope.goal.Id != 0) {
+                    //saved = true;
+                    for (var i = 0; i < $scope.goal.GoalDetails.length; i++) {
+                        //$scope.getTotal($scope.goal.GoalDetails[i]);
+                        //if ($scope.goal.GoalDetails[i].ManualProduceQuantity == 0)
+                        //    $scope.goal.GoalDetails[i].ManualProduceQuantity = '';
+                        checkValidProduct($scope.goal.GoalDetails[i]);
+                    }
+                }
+                else {
+                    $http.get("/api/Employees/FromTeam?teamId=" + teamId).then(function (response) {
+                        var employees = response.data;
+
+                        $http.get("/api/GoalDetailTemplates/FromDayOfWeek?dow=" + dow).then(function (response) {
+                            var goaldetails = response.data;
+                            for (var i = 0; i < goaldetails.length; i++) {
+                                goaldetails[i].ProduceHistories = [];
+                                for (var j = 0; j < employees.length; j++) {
+                                    var emp = employees[j];
+                                    //emp.OldQuantity = emp.Quantity;
+
+                                    goaldetails[i].ProduceHistories.push({
+                                        EmployeeId: emp.Id,
+                                        EmployeeName: emp.Name
+                                    });
+                                }
+                            }
+                            $scope.goal.GoalDetails = goaldetails;
+                        });
+                    });
+                }
+            })
+
+            $http.get("/api/TeamSettings/AdminGet?teamId=" + teamId).then(function (response) {
+                $scope.settings = response.data;
+            });
+
+            $scope.changeEmployeeQuantity = function (goaldetail) {
+                $scope.getTotal(goaldetail);
+            }
+
+            $scope.getTotal = function (goaldetail) {
+                var total = 0;
+                for (var i = 0; i < goaldetail.ProduceHistories.length; i++) {
+                    var employee = goaldetail.ProduceHistories[i];
+                    total += employee.Quantity;
+                }
+                goaldetail.CompProduceQuantity = total;
+                $scope.changeProduceQuantity(goaldetail);
+            };
+
+            $scope.changeProduceQuantity = function (goaldetail) {
+                if (goaldetail.ManualProduceQuantity) {
+                    goaldetail.ProduceQuantity = goaldetail.ManualProduceQuantity;
+                }
+                else goaldetail.ProduceQuantity = goaldetail.CompProduceQuantity;
+            }
+
+            $scope.saveGoal = function () {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/CreateOrUpdate",
+                    dataType: "json",
+                    data: JSON.stringify($scope.goal)
+                })
+                .success(function (data, status, headers, config) {
+                    $scope.goal = data;
+                    for (var i = 0; i < $scope.goal.GoalDetails.length; i++) {
+                        checkValidProduct($scope.goal.GoalDetails[i]);
+                    }
+                    alert("Đã lưu");
+                });
+            }
+
+            $scope.showSecondaryScreen = function () {
+                if ($scope.settings.SecondaryScreenId == 0) {
+                    alert("Yêu cầu chọn màn hình cần hiển thị!!!");
+                    return;
+                };
+                $http({
+                    method: 'POST',
+                    url: "/api/TeamSettings/CreateOrUpdate",
+                    dataType: "json",
+                    data: JSON.stringify($scope.settings)
+                })
+                .success(function (data, status, headers, config) {
+                    alert("Hiển thị màn hình khác thành công");
+                });
+            }
+
+            $scope.showMessageScreen = function () {
+                $scope.settings.DisplayMode = 2;
+                $scope.settings.SecondaryScreenId = 3;
+                $http({
+                    method: 'POST',
+                    url: "/api/TeamSettings/CreateOrUpdate",
+                    dataType: "json",
+                    data: JSON.stringify($scope.settings)
+                }).success(function (data, status, headers, config) {
+                    alert("Hiển thị màn hình khác thành công");
+                });
+            }
+        });
+
+        app.directive('hideZero', [function () {
+            return {
+                require: '?ngModel', // get a hold of NgModelController
+                link: function (scope, element, attrs, ngModel) {
+
+                    // Specify how UI should be updated
+                    ngModel.$formatters.push(function (value) {
+                        if (value === 0) {
+                            // If the value is zero, return a blank string.
+                            return '';
+                        }
+
+                        return value;
+                    });
+                }
+            };
+        }]);
+
+        app.directive('modal', function () {
+            return {
+                template: '<div class="modal fade">' +
+                    '<div class="modal-dialog modal-lg">' +
+                      '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                          '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                          '<h4 class="modal-title">{{ title }}</h4>' +
+                        '</div>' +
+                        '<div class="modal-body" ng-transclude></div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-check"></i> Hoàn thành</button>' +
+                        '</div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>',
+                restrict: 'E',
+                transclude: true,
+                replace: true,
+                scope: {
+                    data: '='
+                },
+                link: function postLink(scope, element, attrs) {
+                    scope.title = attrs.title;
+                    scope.id = attrs.id;
+
+                    scope.$watch(attrs.visible, function (value) {
+                        if (value == true)
+                            $(element).modal('show');
+                        else
+                            $(element).modal('hide');
+                    });
+
+                    $(element).on('shown.bs.modal', function () {
+                        //var a = allemployees.ttAdapter();
+                        //console.log(a);
+                        var $newEmployeeInput = $(this).find('.newEmployee');
+                        var $addEmployeebtn = $(this).find('.btn-addemployee');
+
+                        var updateInput = function () {
+                            $.get('/api/Employees/GetAll', function (employees) {
+
+                                for (var i = 0 ; i < employees.length; i++) {
+                                    for (var j = 0; j < scope.data.ProduceHistories.length; j++) {
+                                        if (employees[i].Id == scope.data.ProduceHistories[j].EmployeeId) {
+                                            employees.splice(i, 1);
+                                            i--;
+                                            break;
+                                        }
+                                    }
+                                }
+                                //$newEmployeeInput.tagsinput('destroy');
+                                $newEmployeeInput.tagsinput({
+                                    itemValue: 'Id',
+                                    itemText: 'Name',
+                                    maxTags: 1,
+
+                                    typeahead: {
+                                        source: employees,
+
+                                        //source: function (query) {
+                                        //    return $.get('/api/Employees/GetAll');
+                                        //}
+                                    }
+                                });
+
+                            });
+                        }
+                        updateInput();
+
+                        $addEmployeebtn.on("click", function () {
+                            var $empInput = $("#newEmployeeRow-" + scope.data.Id).find(".newEmployee");
+                            var emp = $empInput.tagsinput('items')[0];
+                            if (emp != null) {
+                                scope.data.ProduceHistories.push({
+                                    EmployeeId: emp.Id,
+                                    EmployeeName: emp.Name,
+                                    Quantity: scope.data.NewEmpQuantity
+                                });
+                                $empInput.tagsinput('removeAll');
+                                scope.data.NewEmpQuantity = '';
+
+                                $newEmployeeInput.tagsinput('destroy');
+                                updateInput();
+
+
+                                if ($("#empForAll-" + scope.data.Id).is(':checked')) {
+                                    for (var i = 0; i < scope.goal.GoalDetails.length; i++) {
+                                        if ($scope.goal.GoalDetails[i] != goaldetail) {
+                                            $scope.goal.GoalDetails[i].ProduceHistories.push({
+                                                EmployeeId: emp.Id,
+                                                EmployeeName: emp.Name
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        scope.$apply(function () {
+                            scope.$parent[attrs.visible] = true;
+                        });
+                    });
+
+                    $(element).on('hidden.bs.modal', function () {
+                        scope.$apply(function () {
+                            scope.$parent[attrs.visible] = false;
+                        });
+                    });
+                }
+            };
+        });
+
+        app.directive('modalRevisions', function () {
+            return {
+                template: '<div class="modal fade">' +
+                    '<div class="modal-dialog modal-lg">' +
+                      '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                          '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                          '<h4 class="modal-title">{{ title }}</h4>' +
+                        '</div>' +
+                        '<div class="modal-body" ng-transclude></div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-check"></i>OK</button>' +
+                        '</div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>',
+                restrict: 'E',
+                transclude: true,
+                replace: true,
+                scope: {
+                },
+                link: function postLink(scope, element, attrs) {
+                    scope.title = attrs.title;
+                    scope.id = attrs.id;
+
+                }
+            };
+        });
+
+        app.directive('convertToNumber', function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, element, attrs, ngModel) {
+                    ngModel.$parsers.push(function (val) {
+                        return parseInt(val, 10);
+                    });
+                    ngModel.$formatters.push(function (val) {
+                        return '' + val;
+                    });
+                }
+            };
+        });
+    </script>
+}

@@ -1,0 +1,34 @@
+﻿@model List<GoalDetailFilterView>
+
+<td>
+    @foreach (GoalDetailFilterView g in Model)
+    {
+        if (!string.IsNullOrEmpty(g.ProductId))
+        {
+            <p>@g.ProductId</p>
+        }
+
+    }
+</td>
+<td>
+    @foreach (GoalDetailFilterView g in Model)
+    {
+        if (!string.IsNullOrEmpty(g.ProductId))
+        {
+            <p>@g.Quantity</p>
+        }
+
+    }
+</td>
+<td>
+    @foreach (GoalDetailFilterView g in Model)
+    {
+        if (!string.IsNullOrEmpty(g.ProductId))
+        {
+            <p>@g.ProductQuantity</p>
+        }
+
+    }
+</td>
+
+

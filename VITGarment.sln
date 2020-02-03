@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Garment.Data", "Data\Garment.Data.csproj", "{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Garment.Web", "Garment.Web\Garment.Web.csproj", "{28D75881-EFB3-425A-BDD1-AB1EE6575937}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Garment.Mobile", "Garment.Mobile\Garment.Mobile.csproj", "{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28D75881-EFB3-425A-BDD1-AB1EE6575937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28D75881-EFB3-425A-BDD1-AB1EE6575937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28D75881-EFB3-425A-BDD1-AB1EE6575937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28D75881-EFB3-425A-BDD1-AB1EE6575937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99EB35D4-A13D-4601-B0F3-86EA8A3D4F86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://192.168.0.240:8080/tfs/defaultcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Garment.Web\\Garment.Web.csproj
+		SccProjectName1 = Garment.Web
+		SccLocalPath1 = Garment.Web
+		SccProjectUniqueName2 = Data\\Garment.Data.csproj
+		SccProjectName2 = Data
+		SccLocalPath2 = Data
+		SccProjectUniqueName3 = Garment.Mobile\\Garment.Mobile.csproj
+		SccProjectName3 = Garment.Mobile
+		SccLocalPath3 = Garment.Mobile
+	EndGlobalSection
+EndGlobal

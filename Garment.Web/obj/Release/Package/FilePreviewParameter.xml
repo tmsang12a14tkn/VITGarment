@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="vitgarment.vitcorp.vn" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\VITGarment-TFS\\VITGarment\\Garment\.Web\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^D:\\VITGarment-TFS\\VITGarment\\Garment\.Web\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+  <parameter name="GarmentContext-Web.config Connection String" description="" value="Data Source=192.168.0.240;Initial Catalog=Garment_Test;Persist Security Info=True;User ID=garment;Password=Abc@@123;MultipleActiveResultSets=True" tags="">
+    <parameterEntry kind="XmlFile" scope="D:\\VITGarment-TFS\\VITGarment\\Garment\.Web\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='GarmentContext']/@connectionString" />
+  </parameter>
+</parameters>

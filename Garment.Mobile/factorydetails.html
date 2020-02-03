@@ -1,0 +1,134 @@
+﻿<ons-page ng-controller="FactoryDetailsController">
+    <ons-toolbar>
+        <div class="left"><ons-toolbar-button ng-click="goTo(-1)"><ons-icon icon="ion-chevron-left" style="color: white; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+        <div class="center">{{factory.FactoryName}}</div>
+        <div class="right"><ons-toolbar-button ng-click="goTo(1)"><ons-icon icon="ion-chevron-right" style="color: white; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+    </ons-toolbar>
+
+    <div class="navigation-bar sub-nav">
+        <div class="navigation-bar__left"><ons-toolbar-button ng-click="goToDate(-1)"><ons-icon icon="ion-chevron-left" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+        <div class="navigation-bar__center">
+            <input type="text" pick-a-date="date" pick-a-date-options="datePickerOptions" style="opacity:0; width: 0" name="datepicker" id="datepicker">
+            <label for="datepicker">
+                {{factory.DayOfWeek}} - {{factory.Date}}
+                <ons-toolbar-button><ons-icon icon="ion-android-calendar" style="color: #808285; font-size: 22px;" fixed-width="false"></ons-icon></ons-toolbar-button>
+            </label>
+        </div>
+        <div class="navigation-bar__right" ng-if="!isToday()"><ons-toolbar-button ng-click="goToDate(1)"><ons-icon icon="ion-chevron-right" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+    </div>
+
+    <ons-col class="factory-detail">
+        <ons-row class="sub-row statics-row">
+            <ons-col width="75px">Tiến độ</ons-col>
+            <ons-col width="22%" class="red">{{factory.TotalQuantity - factory.TotalQuantityProduct}}</ons-col>
+            <ons-col width="22%" class="green">{{factory.TotalQuantityProduct}}</ons-col>
+            <ons-col width="22%">{{factory.TotalQuantity}}</ons-col>
+            <ons-col class="col ons-col-inner {{factory.Color}}" width="calc(34% - 76px)">{{factory.PercentProcess}}%</ons-col>
+        </ons-row>
+        <ons-row class="sub-row">
+            <ons-col width="75px"></ons-col>
+            <ons-col>
+                <ons-progress-bar value="{{factory.PercentProcess}}">
+                    <div class="progress-bar progress-bar--determinate">
+                        <div class="progress-bar__secondary" style="width: 0%;"></div>
+                        <div class="progress-bar__primary bg-{{factory.Color}}" style="width: {{factory.PercentProcess}}%;"></div>
+                    </div>
+                </ons-progress-bar>
+            </ons-col>
+        </ons-row>
+        <ons-row class="sub-row remain-time" style="padding-right: 1px !important">
+            <ons-col width="105px">Thời gian còn</ons-col>
+            <ons-col>{{factory.TeamDetails[0].TimeLeft}}</ons-col>
+            <ons-col class=""></ons-col>
+            <ons-col></ons-col>
+            <ons-col>{{factory.PercentTime}}%</ons-col>
+        </ons-row>
+        <ons-row class="sub-row">
+            <ons-col width="75px">Tổ may</ons-col>
+            <ons-col width="22%" class="red">{{factory.TeamCount - factory.GoodTeamCount}}</ons-col>
+            <ons-col width="22%" class="green">{{factory.GoodTeamCount}}</ons-col>
+            <ons-col width="22%">{{factory.TeamCount}}</ons-col>
+            <ons-col width="3%">&nbsp;</ons-col>
+        </ons-row>
+        <ons-row class="sub-row">
+            <ons-col width="75px">Công nhân</ons-col>
+            <ons-col width="22%" class="red">{{factory.TotalNoEmployeeDefault - factory.TotalNoEmployeeAvailable}}</ons-col>
+            <ons-col width="22%" class="green">{{factory.TotalNoEmployeeAvailable}}</ons-col>
+            <ons-col width="22%">{{factory.TotalNoEmployeeDefault}}</ons-col>
+            <ons-col width="3%">&nbsp;</ons-col>
+        </ons-row>
+
+    </ons-col>
+
+    <ons-row class="row-filter">
+        <ons-col width="90px">Sắp xếp theo</ons-col>
+        <ons-col>
+            <select style="width: 90%; border: none; margin: 0 5%;" ng-model="sortBy" ng-options="option.label for option in options"></select>
+        </ons-col>
+        <ons-col width="20px">
+            <ons-icon icon="{{reverse?'ion-android-arrow-dropup':'ion-android-arrow-dropdown'}}" style="font-size: 18px;" fixed-width="false" ng-click="changeReverse()"></ons-icon>
+        </ons-col>
+    </ons-row>
+
+    <ons-list modifier="inset">
+        <ons-list-header>
+            <ons-row>
+                <ons-col width="70px">Tổ may</ons-col>
+                <ons-col>Công nhân</ons-col>
+                <ons-col>Tiến độ</ons-col>
+            </ons-row>
+        </ons-list-header>
+        <ons-list-item ng-repeat="team in factory.TeamDetails | orderBy: sortBy.value: reverse" ng-click="goToTeamDetails(team)">
+            <ons-row>
+                <ons-col width="70px">
+                    <span class="team-name">{{team.TeamName}}</span>
+                </ons-col>
+                <ons-col>
+                    {{team.CurrentNoEmployee}}/{{team.TotalEmployee}}
+                </ons-col>
+                <ons-col>
+                    {{team.TotalQuantityProduct}}/{{team.TotalQuantity}}
+                    <span ng-class="team.Color">
+                        ({{team.PercentProcess}}%)
+                    </span>
+                </ons-col>
+            </ons-row>
+            <ons-list>
+                <ons-list-item ng-repeat="product in team.CurrentGoalSession.LastHour.ProductDetails" ng-if="product.ProductId">
+                    <ons-row class="product">
+                        <ons-col class="product-id" width="240px">
+                            {{product.ProductId}}
+                        </ons-col>
+                        <ons-col>
+                            <ons-icon style="font-size:24px; margin: 5px" ng-if="product.Reasons.length == 0 && team.Color == 'green'" icon="ion-ios-checkmark" class="green"></ons-icon>
+                            <!--<ons-icon ng-if="product.Reasons.length == 0 && product.ProduceQuantity<product.Quantity" icon="ion-close-circled" class="red"></ons-icon>-->
+                            <div ng-if="product.Reasons.length != 0">
+                                <img ng-repeat="reason in product.Reasons" ng-src="img/errors/{{reason.ErrorCode}}.png" width="20" height="20" style="vertical-align: middle; margin: 5px;" />
+                            </div>
+                        </ons-col>
+                    </ons-row>
+                    <ons-row ng-if="product.Comment" class="comment red">
+                        {{product.Comment}}
+                    </ons-row>
+                </ons-list-item>
+            </ons-list>
+        </ons-list-item>
+    </ons-list>
+
+    <ons-bottom-toolbar>
+        <div class="navigation-bar__left"><ons-back-button>Trở lại</ons-back-button></div>
+        <div class="navigation-bar__title navigation-bar__center">Menu</div>
+        <div class="navigation-bar__right">
+            <ons-toolbar-button>
+                <ons-icon icon="ion-gear-a" style="font-size: 18px; width: 1em"></ons-icon>
+            </ons-toolbar-button>
+        </div>
+    </ons-bottom-toolbar>
+    <!--<ons-modal var="modal">
+        <ons-list>
+            <ons-list-item ng-click="goToErrorChart()">Biểu đồ sự cố</ons-list-item>
+            <ons-list-item>Biểu đồ nhân sự</ons-list-item>
+            <ons-list-item>Biểu đồ sản xuất</ons-list-item>
+        </ons-list>
+    </ons-modal>-->
+</ons-page>

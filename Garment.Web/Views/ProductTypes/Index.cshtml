@@ -1,0 +1,91 @@
+﻿@model IEnumerable<Data.Models.ProductType>
+
+@{
+    ViewBag.Title = "Danh sách loại sản phẩm";
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix">
+                <h2 class="pull-left"><b>Quản lý loại sản phẩm</b></h2>
+                <div class="navbar-form navbar-right" role="search" id="formsearch">
+
+                    <div class="form-group">
+                        <a href="/ProductTypes/Create" title="Tạo mới sản phẩm" class="btn btn-success pull-right">
+                            <i class="fa fa-plus fa-lg"></i> Tạo mới loại sản phẩm
+                        </a>
+                    </div>
+                </div>
+            </header>
+            <div class="main-box-body clearfix">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table user-list table-hover" id="manage_video">
+                            <thead>
+                                <tr>
+                                    <th><span>Tên</span></th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodytvc">
+                                @foreach (var item in Model)
+                                {
+                                    <tr id="item_@item.Id">
+                                        <td>
+                                            @item.Name
+                                        </td>
+                                        <td>
+                                            <a href="/ProductTypes/Edit/@item.Id" class="table-link gray" title="Chỉnh sửa">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a href="/ProductTypes/Delete/@item.Id" class="table-link danger" title="Xóa" data-toggle="modal" data-target="#deleteVideoModal"
+                                               data-ajax="true"
+                                               data-ajax-complete=""
+                                               data-ajax-mode="replace"
+                                               data-ajax-update="#deleteVideoContent">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="deleteVideoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="deleteVideoContent">
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        function OnDeleteSuccess(data) {
+            if (data.success == true) {
+                $("#deleteVideoModal").modal("hide");
+                $("#deleteVideoModal").empty();
+                $("#item_" + data.id).remove();
+            }
+            else {
+                alert(data.error);
+            }
+        }
+
+    </script>
+
+}

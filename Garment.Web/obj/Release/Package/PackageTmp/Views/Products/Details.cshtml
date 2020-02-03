@@ -1,0 +1,214 @@
+﻿@model Garment.Web.Models.ProductDetailsModel
+
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+}
+
+<div class="col-lg-12">
+    <div class="main-box clearfix">
+        <header class="main-box-header clearfix">
+            <div class="row">
+                <h2 class="pull-left"><b>Thông tin chi tiết sản phẩm</b></h2>
+            </div>
+        </header>
+        <div class="row" id="user-profile">
+            <div class="col-lg-3 col-md-4 col-sm-4">
+
+                <header class="main-box-header clearfix">
+                    <h2><b>@Model.ProductInfo.Name</b></h2>
+                </header>
+                <div class="main-box-body clearfix">
+                    <div class="profile-details">
+                        <ul class="fa-ul">
+                            <li><i class="fa-li"></i>Lô hàng: <span>@Model.ProductInfo.Lot</span></li>
+                            <li><i class="fa-li"></i>Số lượng: <span>@Model.ProductInfo.Quantity</span></li>
+                            <li><i class="fa-li"></i>Đã sản xuất: <span>@Model.ProductInfo.ProduceQuantity</span></li>
+                            <li><i class="fa-li"></i>Giới tính: <span>@Model.ProductInfo.Gender</span></li>
+                        </ul>
+                    </div>
+                    <div class="profile-message-btn center-block text-center">
+                        <a href="/Products/Index" class="btn btn-primary">
+                            <i class="fa fa-arrow-left"></i>
+                            Quay về trang quản lý sản phẩm
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-9 col-md-8 col-sm-8">
+                <div class="main-box clearfix">
+                    <div class="tabs-wrapper profile-tabs">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#production-history" data-toggle="tab">Lịch sử sản xuất</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade active in" id="production-history">
+                                <div id="newsfeed">
+                                    <div class="row">
+                                        <div class="table-responsive">
+                                            <table class="table user-list table-hover" id="manage_video">
+                                                <thead>
+                                                    <tr>
+                                                        <th><span>Tổ</span></th>
+                                                        <th><span>Mục tiêu</span></th>
+                                                        <th><span>Thực tế</span></th>
+                                                    </tr>
+                                                </thead>
+
+                                                @foreach (var productDateView in Model.ProductDateViews)
+                                                {
+                                                    <thead class="theadvideo" id="theadvideo">
+                                                        <tr>
+                                                            <th><h2>Ngày @productDateView.Date.ToShortDateString()</h2></th>
+                                                            <th><span></span></th>
+                                                            <th><span></span></th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody id="tbodytvc">
+                                                        @foreach (var productGoalView in productDateView.ProductGoalViews)
+                                                        {
+                                                            <tr>
+                                                                <td>@productGoalView.TeamName</td>
+                                                                <td>@productGoalView.Quantity</td>
+                                                                <td>@productGoalView.ProduceQuantity</td>
+                                                            </tr>
+                                                        }
+                                                        <tr>
+                                                            <th>Tổng</th>
+                                                            <th>@productDateView.Quantity</th>
+                                                            <th>@productDateView.ProduceQuantity</th>
+                                                        </tr>
+                                                    </tbody>
+                                                }
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@*<div class="row">
+    <div class="col-lg-12">
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix">
+                <div class="row">
+                    <h2 class="pull-left"><b>Thông tin chi tiết sản phẩm</b></h2>
+                </div>
+            </header>
+            <div class="main-box-body clearfix">
+                <div class="row">
+                        <ul class="nav nav-tabs">
+                            <li class="">
+                                <a href="/Products/Index" title="Quay về trang quản lý sản phẩm" class="glyphicon glyphicon-chevron-left"></a>
+                            </li>
+                            <li class="active">
+                                <a href="#product-info" data-toggle="tab">Thông tin</a>
+                            </li>
+                            <li>
+                                <a href="#production-history" data-toggle="tab">Lịch sử sản xuất</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content tab-content-body">
+                            <div id="product-info" class="tab-pane active">
+                                <h4>Thông tin</h4>
+                                <hr />
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        Lô hàng
+                                    </dt>
+
+                                    <dd>
+                                        @Model.ProductInfo.Lot
+                                    </dd>
+
+                                    <dt>
+                                        Số lượng
+                                    </dt>
+
+                                    <dd>
+                                        @Model.ProductInfo.Quantity
+                                    </dd>
+                                    <dt>
+                                        Đã sản xuất
+                                    </dt>
+
+                                    <dd>
+                                        @Model.ProductInfo.ProduceQuantity
+                                    </dd>
+
+                                    <dt>
+                                        Loại SP
+                                    </dt>
+
+                                    <dd>
+                                        @Model.ProductInfo.Name
+                                    </dd>
+                                    <dt>
+                                        Giới tính
+                                    </dt>
+
+                                    <dd>
+                                        @Model.ProductInfo.Gender
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div id="production-history" class="tab-pane">
+                                <div class="row">
+                                    <div class="table-responsive">
+                                        <table class="table user-list table-hover" id="manage_video">
+                                            <thead>
+                                                <tr>
+                                                    <th><span>Tổ</span></th>
+                                                    <th><span>Mục tiêu</span></th>
+                                                    <th><span>Thực tế</span></th>
+                                                </tr>
+                                            </thead>
+
+                                            @foreach (var productDateView in Model.ProductDateViews)
+                                            {
+                                                <thead class="theadvideo" id="theadvideo">
+                                                    <tr>
+                                                        <th><h2>Ngày @productDateView.Date.ToShortDateString()</h2></th>
+                                                        <th><span></span></th>
+                                                        <th><span></span></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="tbodytvc">
+                                                    @foreach (var productGoalView in productDateView.ProductGoalViews)
+                                                    {
+                                                        <tr>
+                                                            <td>@productGoalView.TeamName</td>
+                                                            <td>@productGoalView.Quantity</td>
+                                                            <td>@productGoalView.ProduceQuantity</td>
+                                                        </tr>
+                                                    }
+                                                    <tr>
+                                                        <th>Tổng</th>
+                                                        <th>@productDateView.Quantity</th>
+                                                        <th>@productDateView.ProduceQuantity</th>
+                                                    </tr>
+                                                </tbody>
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@
+

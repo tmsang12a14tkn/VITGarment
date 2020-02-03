@@ -1,0 +1,36 @@
+﻿@model QC
+<tr id="qc-@Model.Id">
+    <td>@Model.Name</td>
+    <td>@Model.Type</td>
+    <td>@Model.Code</td>
+    <td>@Model.Supplier</td>
+    <td>
+        @if (Model.Visible)
+        {
+            <a data-ajax="true" data-ajax-method="Post" data-ajax-mode="replace-with" data-ajax-update="#qc-@Model.Id" href="@Url.Action("ChangeVisibleStatus", "QC", new { id = Model.Id})" class="btn btn-primary">
+                <span class="fa fa-eye"></span>
+            </a>
+        }
+        else
+        {
+            <a data-ajax="true" data-ajax-method="Post" data-ajax-mode="replace-with" data-ajax-update="#qc-@Model.Id" href="@Url.Action("ChangeVisibleStatus", "QC", new { id = Model.Id})" class="btn btn-default">
+                <span class="fa fa-eye-slash"></span>
+            </a>
+        }
+    </td>
+    <td>
+            @Ajax.ActionLink("Sửa", "_Edit", new { id = Model.Id }, new AjaxOptions
+       {
+           UpdateTargetId = "qcmodal-content",
+           HttpMethod = "Get",
+           InsertionMode = InsertionMode.Replace
+       }, new { data_toggle = "modal", data_target = "#qcmodal" }) | 
+        @Ajax.ActionLink("Xóa", "_Delete", new { id = Model.Id }, new AjaxOptions
+   {
+       UpdateTargetId = "qcmodal-content",
+       HttpMethod = "Get",
+       InsertionMode = InsertionMode.Replace
+   }, new { data_toggle = "modal", data_target = "#qcmodal" }) |
+        </td>
+</tr>
+

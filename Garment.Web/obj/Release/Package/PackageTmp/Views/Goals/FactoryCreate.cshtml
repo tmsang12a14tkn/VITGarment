@@ -1,0 +1,1327 @@
+﻿@model Factory
+@{
+    ViewBag.Title = "Nhập dữ liệu cho xí nghiệp";
+    var isAdmin = User.IsInRole("Admin");
+    DateTime currentDate = ViewBag.Date;
+    DateTime beginTabTime = DateTimeExtensions.StartOfWeek(currentDate, DayOfWeek.Monday);
+    DateTime lastTabTime = beginTabTime.AddDays(6);
+}
+
+<div class="row container-div" ng-app="garmentApp" ng-controller="goalscontroller">
+    <div>
+        <div class="main-box">
+            <div class="main-box-header">
+                <h1><b>@Model.Name</b></h1>
+            </div>
+
+            <div class="main-box-body tabs-wrapper">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id})"><span class="fa fa-home"></span></a>
+                    </li>
+                    <li>
+                        <input type="text" style="opacity:0; width: 0; float: left" name="datepicker" id="datepicker" />
+                        <a href="#" id="btndatepicker">
+                            <span class="fa fa-calendar"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = currentDate.AddDays(-7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    </li>
+                    @for (var date = beginTabTime; date <= lastTabTime; date = date.AddDays(1))
+                    {
+                        <li class="@(date == currentDate?"active":"")@(date > DateTime.Now?" disabled":"")">
+                            <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = date.ToString("dd/MM/yyyy")})"><b>@date.DayOfWeekVN()</b> @date.ToString("dd/MM")</a>
+                        </li>
+                    }
+                    <li class="@(currentDate.AddDays(7) > DateTime.Now?"disabled":"")">
+                        <a href="@Url.Action("FactoryCreate", "Goals", new { factoryId = Model.Id, date = currentDate.AddDays(7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </li>
+                </ul>
+                @* check1 *@
+                @*  ng-show="isLoadFirst" *@
+                <a href="#modal-target" data-toggle="modal" class="btn btn-primary" ng-show="isLoadFirst">Nhập kế hoạch sản xuất</a>
+                <a href="#modal-noemployee" data-toggle="modal" class="btn btn-primary" ng-show="isLoadFirst">Điểm danh công nhân</a>
+                <hr />
+                
+                <div class="panel-group accordion" id="accordion">
+                    <div class="row" ng-show="!isLoadFirst" style="margin:0 auto; width:50%">
+                        <div class="form-group">
+                            <h2><b>Chọn đội nhóm</b></h2>
+                            <div class="checkbox-nice" ng-repeat="(index,enabled) in teams">
+                                <input id="checkbox-{{index}}" type="checkbox" ng-model="teams[index].Selected">
+                                <label for="checkbox-{{index}}">
+                                    {{teams[index].Name}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-success" href="#" ng-click="submitChoseTeam()">
+                                <i class="fa fa-save"></i>
+                                Hoàn thành
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                    @*<table class="table table-responsive table-bordered">
+                        <tbody>
+                            <tr>
+
+                                <td class="cell-sheet">
+
+                                    <select name="ReasonIds" multiple="multiple" multiple-select ng-model="productdetail.ReasonIds"
+                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                            class="cell-input"></select>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+                    </table>*@
+
+
+                        @* Thêm trước *@
+                        <div class="panel panel-default" ng-show="pregroup" id="tab-group-pre">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre">
+                                        <b>+</b>
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_pre">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in pregroup.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="ReasonIds" multiple="multiple" multiple-select ng-model="productdetail.ReasonIds"
+                                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre" ng-click="savePreGoal()">
+                                            <i class="fa fa-save"></i>
+                                            Thêm
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion" href="#collapse_pre">
+                                            <i class="fa fa-close"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="group in groups" class="panel" ng-class="{'active':$first, 'panel-default':group.IsChangeProQuantity == 0, 'panel-primary':group.IsChangeProQuantity == 1, 'panel-deficient':group.IsChangeProQuantity == 2 }" id="tab-group-{{$index}}">
+                            <div class="panel-heading" id="collapcontainer_{{group.StartTime}}">
+                                <h4 class="panel-title">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_{{group.StartTime}}">
+                                        {{group.StartTime}} - {{group.EndTime}}
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_{{group.StartTime}}">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                                @*<th class="text-center" width="5%">Lỗi</th>*@
+                                                @*@if (isAdmin)
+                                    {
+                                        <th class="text-center" width="5%">Phiên bản</th>
+                                    }*@
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in group.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits60 />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+
+                                                @* Mã sản phẩm *@
+                                                @*<td>
+                                        <input name="ProductId" class="form-control text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="goaldetail.ProductId" />
+                                    </td>*@
+                                                @* Mục tiêu *@
+                                                @*<td>
+                                        <input type="text" class="form-control" ng-model="goaldetail.Quantity" hide-zero only-digits />
+                                    </td>*@
+                                                @* Thực tế *@
+                                                @*<td>
+                                        <input type="text" class="form-control" ng-model="goaldetail.ProduceQuantity" hide-zero only-digits />
+                                    </td>*@
+                                                @* Lý do *@
+                                                @*<td>
+                                        <select name="ReasonId" ng-model="goaldetail.ReasonId"
+                                                ng-options="reason.Id as reason.Name for reason in reasons"
+                                                class="form-control">
+                                            <option></option>
+                                        </select>
+                                    </td>*@
+                                                @* Ghi chú *@
+                                                @*<td>
+                                        <textarea style="word-wrap: normal;height:35px" class="form-control" wrap="soft" ng-model="goaldetail.Comment"></textarea>
+                                    </td>*@
+                                                @*<td>
+                                        <input type="text" class="form-control" ng-model="goaldetail.NoError" hide-zero only-digits />
+                                    </td>*@
+
+                                                @*@if (isAdmin)
+                                    {
+                                        <td>
+                                            <a href="#modal-revisions-{{goaldetail.Id}}" data-toggle="modal">{{goaldetail.Revisions.length}}</a>
+                                        </td>
+                                    }*@
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="Reasons" multiple="multiple" multiple-select ng-model="productdetail.Reasons"
+                                                            ng-options="reason.Name for reason in reasons track by reason.Id"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-collapindex="#collapse_{{$index}}" ng-click="saveSessionGoal(group)">
+                                            <i class="fa fa-save"></i>
+                                            Lưu thay đổi
+                                        </button>
+                                        <button type="button" class="btn btn-danger" ng-click="cancelSessionGoal(group.StartTime)">
+                                            <i class="fa fa-times"></i>
+                                            Huỷ
+                                        </button>
+                                        <button type="button" class="btn btn-info" ng-show="$last || $first" ng-click="hideSessionGoal(group)">
+                                            <i class="fa fa-eye-slash"></i>
+                                            Ẩn
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            @*<modal-revisions ng-repeat="goaldetail in goal.GoalDetails" data="goaldetail.Revisions" title="Các phiên bản đã lưu" id="modal-revisions-{{goaldetail.Id}}">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Phút</th>
+                                <th>Tài khoản</th>
+                                <th>Mục tiêu</th>
+                                <th>Thực tế</th>
+                                <th>Số nhân công</th>
+                                <th>Lý do</th>
+                                <th>Mã hàng</th>
+                                <th>Ghi chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="rv in goaldetail.Revisions">
+                                <td>{{rv.DateTime}}</td>
+                                <td>{{rv.TotalMinutes}}</td>
+                                <td>{{rv.UserName}}</td>
+                                <td>{{rv.Quantity}}</td>
+                                <td>
+                                    {{rv.ProduceQuantity}}
+                                </td>
+                                <td>{{rv.NoEmployee}}</td>
+                                <td>{{rv.Reason}}</td>
+                                <td>{{rv.ProductId}}</td>
+                                <td>{{rv.Comment}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </modal-revisions>*@
+                        </div>
+
+                        @* Thêm sau *@
+                        <div class="panel panel-default" ng-show="nextgroup" id="tab-group-next">
+                            <div class="panel-heading">
+                                <h4 class="panel-title-new">
+                                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapse_next">
+                                        <b>+</b>
+                                    </a>
+                                </h4>
+                            </div>
+
+                            <div class="panel-collapse collapse" id="collapse_next">
+                                <div class="panel-body">
+                                    <table class="table table-responsive table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center" width="7%">Tổ/Đội</th>
+                                                <th class="text-center" width="6%">Số phút</th>
+                                                <th class="text-center" width="6%">Số nhân công</th>
+                                                <th class="text-center" width="15%">Mã hàng</th>
+                                                <th class="text-center" width="6%">Mục tiêu</th>
+                                                <th class="text-center" width="6%">Thực tế</th>
+                                                <th class="text-center" width="17%">Lý do</th>
+                                                <th class="text-center">Ghi chú</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody ng-repeat="goaldetail in nextgroup.GoalDetails">
+                                            <tr>
+                                                <td class="cell-sheet text-center" rowspan="{{goaldetail.ProductDetails.length + 1}}">{{goaldetail.TeamName}}</td>
+                                                @* Số phút *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.TotalMinutes" only-digits60 />
+                                                </td>
+                                                @* Số công nhân *@
+                                                <td class="cell-sheet" rowspan="{{goaldetail.ProductDetails.length + 1}}">
+                                                    <input type="text" class="cell-input" ng-model="goaldetail.NoEmployee" only-digits />
+                                                </td>
+                                            </tr>
+
+                                            <tr ng-repeat="productdetail in goaldetail.ProductDetails">
+                                                @* Mã sản phẩm *@
+                                                <td class="cell-sheet">
+                                                    <input name="ProductId" class="cell-input text-uppercase" ng-class="{'red':goaldetail.ValidProduct===false}" ng-model="productdetail.ProductId" />
+                                                </td>
+                                                @* Mục tiêu *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.Quantity" only-digits />
+                                                </td>
+                                                @* Thực tế *@
+                                                <td class="cell-sheet">
+                                                    <input type="text" class="cell-input" ng-model="productdetail.ProduceQuantity" only-digits />
+                                                </td>
+                                                @* Lý do *@
+                                                <td class="cell-sheet">
+                                                    <select name="ReasonIds" multiple="multiple" multiple-select ng-model="productdetail.ReasonIds"
+                                                            ng-options="reason.Id as reason.Name for reason in reasons"
+                                                            class="cell-input"></select>
+                                                </td>
+                                                @* Ghi chú *@
+                                                <td class="cell-sheet">
+                                                    <textarea style="word-wrap: normal;height:35px" class="cell-input" wrap="soft" ng-model="productdetail.Comment"></textarea>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                    <div class="row">
+                                        <button type="button" class="btn btn-success" data-toggle="collapse" data-parent="#accordion" href="#collapse_next" ng-click="saveNextGoal()">
+                                            <i class="fa fa-save"></i>
+                                            Thêm
+                                        </button>
+                                        <button type="button" class="btn btn-warning" data-toggle="collapse" data-parent="#accordion" href="#collapse_next">
+                                            <i class="fa fa-close"></i>
+                                            Hủy
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+</div>
+
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="modal" id="modal-target" data-backdrop="static" tabindex="1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelFactoryQuantity()">&times;</button>
+                    <h4 class="modal-title"><b>Nhập kế hoạch sản xuất</b></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" style="color:#3498db">Tổ</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center" ng-repeat="session in factoryQuantity.QuantitySessions" style="word-wrap: break-word; color:#3498db">
+                                        <b>{{session.Start}} - {{session.End}}</b>
+                                    </th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="div-table-content">
+                        <table class="table table-responsive table-bordered">
+                            <tbody ng-repeat="team in factoryQuantity.QuantitiesTeams">
+                                <tr>
+                                    <td class="text-center" rowspan="{{3*NoRow(team.GoalProductDetailList) + 2}}" style="border-right: 1px solid #ddd; color:#3498db">
+                                        <b>{{team.TeamName}}</b>
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-start="i in range(0, NoRow(team.GoalProductDetailList)-1)">
+                                    <td class="cell-sheet text-center" style="color:#3498db"><b>Mã hàng</b></td>
+
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet" ng-class="{'empty-cell': productdetail==null }" data-productid="productdetail.ProductId">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <div class="col-lg-9">
+                                            <input ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.ProductId" class="cell-input text-uppercase productid" />
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <a href="#" class="table-link settings" title="Chức năng" rel="tooltip" data-toggle="tooltip" ng-show="productdetail != null" ng-click="setproductdetail(team, productdetail, i,$index,$parent.$index)">
+                                                <i class="fa fa-cog" title="Chức năng"></i>
+                                            </a>
+                                        </div>
+                                        @*<button class="btn-remove-product" ng-show="productdetail && i!=0" ng-click="removeProduct(productdetail)">-</button>*@
+                                        @*<button class="btnclone" ng-show="productdetail != null" ng-click="cloneValue(team.TeamName, $index,$parent.$index, productdetail.ProductId, 'productid')">></button>*@
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cell-sheet text-center" style="color:#3498db"><b>Mục tiêu</b></td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet" ng-class="{'empty-cell': productdetail==null }">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <input ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.Quantity" class="cell-input quantity" only-digits />
+                                        @*<button class="btnclone" ng-show="productdetail != null" ng-click="cloneValue(team.TeamName, $index,$parent.$index, productdetail.Quantity, 'quantity')">></button>*@
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-end>
+                                    <td colspan="{{team.GoalProductDetailList.length + 1}}" style="padding: 2px;"></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet text-center">
+                                        <button class="btn-add-product" ng-click="addNewProduct(goalProductDetail)"><i class="fa fa-plus"></i></button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    @*<div class="panel panel-default">
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Tổ</th>
+                                    <th class="text-center"></th>
+                                    <th class="text-center" ng-repeat="session in factoryQuantity.QuantitySessions" style="word-wrap: break-word;">
+                                        <b>{{session.Start}} - {{session.End}}</b>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody ng-repeat="team in factoryQuantity.QuantitiesTeams">
+                                <tr>
+                                    <td class="text-center" rowspan="{{3*NoRow(team.GoalProductDetailList) + 2}}" style="border-right: 1px solid #ddd;">
+                                        {{team.TeamName}}
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-start="i in range(0, NoRow(team.GoalProductDetailList)-1)">
+                                    <td class="cell-sheet text-center">Mã hàng</td>
+
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet" ng-class="{'empty-cell': productdetail==null }" data-productid="productdetail.ProductId">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <input ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.ProductId" class="cell-input text-uppercase productid" />
+                                        <button class="btn-remove-product" ng-show="productdetail && i!=0" ng-click="removeProduct(productdetail)">-</button>
+                                        <button class="btnclone">></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="cell-sheet text-center">Mục tiêu</td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet" ng-class="{'empty-cell': productdetail==null }">
+                                        {{productdetail = getProductDetail(goalProductDetail,i);""}}
+                                        <input ng-show="productdetail" type="text" title="{{team.TeamName}}" ng-model="productdetail.Quantity" class="cell-input quantity" only-digits />
+                                    </td>
+                                </tr>
+                                <tr ng-repeat-end>
+                                    <td colspan="{{team.GoalProductDetailList.length + 1}}" style="padding: 2px;"></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td ng-repeat="goalProductDetail in team.GoalProductDetailList" class="cell-sheet text-center">
+                                        <button class="btn-add-product" ng-click="addNewProduct(goalProductDetail)"><i class="fa fa-plus"></i></button>
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>*@
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateFactoryQuantity()"><i class="fa fa-save"></i> Lưu thay đổi</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="cancelFactoryQuantity()"><i class="fa fa-close"></i> Hủy</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal" id="modal-noemployee" tabindex="1" data-backdrop="static" data-keyboard="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" ng-click="cancelFactoryEmployee()">&times;</button>
+                    <h4 class="modal-title"><b>Điểm danh công nhân</b></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="panel panel-default">
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Tổ</th>
+                                    <th>Tổng số</th>
+                                    <th>Có mặt</th>
+                                    <th>Vắng mặt</th>
+                                    <th>Có lý do</th>
+                                    <th>Không lý do</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="goal in factoryNoEmployee">
+                                    <td>{{goal.TeamName}}</td>
+                                    <td>
+                                        <input type="text" ng-model="goal.TotalEmployee" class="form-control" only-digits />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="goal.NoEmployee" class="form-control" only-digits />
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control" ng-value="goal.TotalEmployee - goal.NoEmployee" disabled />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-value="goal.TotalEmployee - goal.NoEmployee - goal.AbsentWithoutReason" class="form-control" disabled>
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="goal.AbsentWithoutReason" class="form-control" only-digits />
+                                    </td>
+                                    <td>
+                                        <input type="text" ng-model="goal.AbsentComment" class="form-control"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" ng-click="updateFactoryEmployee()"><i class="fa fa-save"></i> Lưu thay đổi</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="cancelFactoryEmployee()"><i class="fa fa-close"></i> Hủy</button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <style>
+        .panel-title-new {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 16px;
+            color: inherit;
+        }
+
+        .accordion .panel-title-new > a {
+            display: block;
+            position: relative;
+            outline: none;
+            text-decoration: none;
+            color: #FFFFFF;
+            padding-right: 15px;
+        }
+        table {
+            table-layout:fixed;
+        }
+
+        .div-table-content {
+          height:590px;
+          overflow-y:auto;
+        }
+        .cell-input
+        {
+            width: 100%;
+            padding: 5px 10px;
+            border: 0px;
+            text-align: center;
+            background: transparent;
+        }
+        .cell-sheet
+        {
+            padding: 0px !important;
+            margin: 0px;
+        }
+        .empty-cell
+        {
+            background: #efeded;
+        }
+        .btn-remove-product 
+        {
+        }
+        .btn-add-product
+        {
+            width: 100%;
+            background: none;
+            border: 0;
+        }
+        .modal-lg{
+            width:1300px !important;
+        }
+        /*.thead { display:block; margin:0px; cell-spacing:0px; left:0px; }
+        .thead td { height:50px; width:80px; margin:0px; cell-spacing:0px;}
+        .tbody { display:block; overflow:auto; height:500px; }
+        .tbody td { height:50px; width:80px; margin:0px; cell-spacing:0px;}*/
+    </style>
+    <link href="~/Content/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/Content/angular-datetime-picker.css" rel="stylesheet" />
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/Content/tooltipster/tooltipster.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/tooltipster/themes/tooltipster-shadow.css">
+    <link href="~/Content/bootstrap-multiselect.css" rel="stylesheet" />
+
+}
+
+@section Scripts {
+    <script src="~/Scripts/jquery-ui-1.12.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.13.0/ui-bootstrap-tpls.min.js"></script>
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script type="text/javascript" src="~/Scripts/tooltipster/jquery.tooltipster.min.js"></script>
+    <script src="~/Scripts/bootstrap-multiselect.js"></script>
+    <script>
+        
+        
+        var app = angular.module("garmentApp", ['ui.bootstrap'], function(){       
+        });
+        var date = '@currentDate.ToString("dd/MM/yyyy")';
+        var factoryId = '@Model.Id'
+        var dow = @((int)currentDate.DayOfWeek);
+        var teamdate = '@currentDate.ToString("yyyy-MM-dd")';
+        
+        //var now = new Date();
+        //var dow = now.getDay();
+
+        jQuery('#datepicker').datetimepicker(
+            {
+                timepicker : false,
+                format:'d/m/Y',
+                value: date,
+                onChangeDateTime:function(dp,$i){
+                    window.location = "/Goals/FactoryCreate?factoryId="+factoryId+"&date="+$i.val();
+                }
+            });
+        $("#btndatepicker").on("click", function () {
+            $('#datepicker').datetimepicker('toggle');
+        });
+
+
+        //angular
+        app.controller("goalscontroller", function ($scope, $http, $filter) {
+            
+            $scope.initialgroups = null;
+            $scope.isLoadFirst = false;
+            $scope.factoryId = factoryId;
+            $scope.date = date;
+            $scope.datatemp = [
+                  { Team: null, ProductDetail: null, Position: null, X: null, Y: null }
+            ];
+
+
+            var checkValidProduct = function (goaldetail) {
+                if (goaldetail.ManualProduceQuantity == 0) {
+                    goaldetail.ValidProduct = true;
+                    return;
+                }
+
+                for (var i = 0; i < $scope.products.length; i++) {
+                    if ($scope.products[i].ProductId == goaldetail.ProductId) {
+                        goaldetail.ValidProduct = true;
+                        return;
+                    }
+
+                }
+                goaldetail.ValidProduct = false;
+            }
+
+            $http.get("/api/Products/GetAll").then(function (response) {
+                $scope.products = response.data;
+            });
+            $http.get("/api/Reasons/GetAll").then(function (response) {
+                $scope.reasons = response.data;
+            });
+
+
+            var reloadFactoryQuantity = function()
+            {
+                $http.get("/api/Goals/FactoryQuantity?factoryId=" + factoryId + "&date=" + date).then(function (response) {
+                    $scope.factoryQuantity = response.data;
+                    console.log("factoryQuantity");
+                    console.log($scope.factoryQuantity);
+                    $scope.oriFactoryQuantity = angular.copy(response.data);
+                    
+                });
+            }
+
+            $http.get("/api/Goals/FactoryNoEmployee?factoryId=" + factoryId + "&date=" + date).then(function (response) {
+                $scope.factoryNoEmployee = response.data;
+                $scope.oriFactoryNoEmployee = angular.copy(response.data);
+                //console.log(response.data);
+            });
+
+            var reloadFactorySessions = function(complete)
+            {
+                $http.get("/api/Goals/FactoryFind?factoryId=" + factoryId + "&date=" + date).then(function (response) {
+                    
+                    $scope.groups = angular.copy(response.data.SessionGoals);
+                    $scope.initialgroups = angular.copy(response.data.SessionGoals);
+                    $scope.nextgroup = response.data.NextSessionGoal;
+                    $scope.pregroup = response.data.PreSessionGoal;
+                    if(complete) complete();
+                });
+            }
+
+
+            //check1
+            var reloadChoseTeams = function()
+            {
+                $http.get("/api/Teams/GetAllByFactoryId?factoryId=" + factoryId).then(function (response) {
+                    $scope.teams = response.data;
+                });
+            }
+
+            var choseTeam = function()
+            {
+                $http.get("/api/Goals/IsChoseTeams?factoryId=" + factoryId + "&date=" + date).then(function (response) {
+                    //da chon team roi
+                    if(response.data == true)
+                    {
+                        //cho phep hien thi cac nut
+                        $scope.isLoadFirst = true;
+                        reloadFactoryQuantity();
+                        reloadFactorySessions();
+                    }else
+                    {
+                        $scope.isLoadFirst = false;
+                        reloadChoseTeams();
+                    }
+                });
+            }
+
+            choseTeam();
+
+            $scope.submitChoseTeam = function()
+            {
+                console.log($scope.teams);
+                console.log(teamdate);
+                var obj = {
+                    'teams': $scope.teams,
+                    'date': teamdate
+                };
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/CreateTeamByDate",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(obj),
+                })
+                .success(function (data, status, headers, config) {
+                    if(data == true)
+                    {
+                        $scope.isLoadFirst = true;
+                        reloadFactoryQuantity();
+                        reloadFactorySessions();
+                    }
+                });
+            }
+
+            $scope.saveSessionGoal = function (group) {
+
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/UpdateSessionFactory",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(group),
+                })
+                .success(function (data, status, headers, config) {
+                    $('#collapse_' + data.StartTime).collapse('hide');
+
+                    $.each($scope.groups, function (index, value) {
+                        if(value.StartTime == data.StartTime)
+                        {
+                            $scope.groups[index] = angular.copy(data);
+                            return;
+                        }
+                    });
+                    
+                    $scope.initialgroups = angular.copy($scope.groups);
+
+                    var target = $('#collapcontainer_' + data.StartTime).offset();
+                    if (target != null)
+                    {
+                        $('html, body').animate({
+                            scrollTop: target.top
+                        }, 500);
+                    }
+                    reloadFactoryQuantity();
+                    alert("Đã lưu");
+                });
+            }
+
+            $scope.cancelSessionGoal = function (starttime) {
+                $.each($scope.groups, function (index, value) {
+                    if(value.StartTime == starttime)
+                    {
+                        var result = $filter('filter')($scope.initialgroups, {StartTime : starttime})[0];
+                        $scope.groups[index] = angular.copy(result);
+                        return;
+                    }
+                });
+            }
+
+            $scope.hideSessionGoal = function(group)
+            {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/HideSessionFactory",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(group),
+                })
+                .success(function (data, status, headers, config) {
+                    $('#collapse_' + data.StartTime).collapse('hide');
+                    var id = $scope.groups.indexOf(group);
+                    if(id > -1)
+                    {
+                        $scope.groups.splice(id,1);
+                    }
+                    reloadFactorySessions();
+                    reloadFactoryQuantity();
+                });
+            }
+
+            $scope.saveNextGoal = function()
+            {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/CreateNextSession",
+                    dataType: "json",
+                    data: JSON.stringify($scope.nextgroup)
+                })
+              .success(function (data, status, headers, config) {
+                  console.log(data);
+                  $scope.groups.push(data.Session);
+                  $scope.nextgroup = data.NewSession;
+
+                  reloadFactoryQuantity();
+
+                  alert("Đã lưu");
+
+              });
+            }
+            $scope.savePreGoal = function()
+            {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/CreatePreSession",
+                    dataType: "json",
+                    data: JSON.stringify($scope.pregroup)
+                })
+               .success(function (data, status, headers, config) {
+                   console.log(data);
+                   $scope.groups.unshift(data.Session);
+                   $scope.pregroup = data.NewSession;
+
+                   reloadFactoryQuantity();
+                   alert("Đã lưu");
+               });
+            }
+            
+            $scope.updateFactoryQuantity = function()
+            {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/UpdateFactoryQuantity",
+                    dataType: "json",
+                    data: JSON.stringify($scope.factoryQuantity.QuantitiesTeams)
+                })
+               .success(function (data, status, headers, config) {
+                   $scope.oriFactoryQuantity = angular.copy($scope.factoryQuantity);
+                   //$scope.factoryQuantity.QuantitiesTeams = data;
+                   reloadFactoryQuantity();
+                   reloadFactorySessions(function()
+                   {
+                       alert("Đã lưu");
+                   });
+                  
+               })
+                .error(function (data, status, headers, config) {
+                    console.log(data, status, headers, config);
+                });
+            }
+
+            $scope.updateFactoryEmployee = function()
+            {
+                $http({
+                    method: 'POST',
+                    url: "/api/Goals/UpdateFactoryEmployee",
+                    dataType: "json",
+                    data: JSON.stringify($scope.factoryNoEmployee)
+                })
+               .success(function (data, status, headers, config) {
+                   $scope.oriFactoryNoEmployee = angular.copy($scope.factoryNoEmployee);
+                   reloadFactorySessions(function()
+                   {
+                       alert("Đã lưu");
+                   });
+                   
+               })
+                .error(function (data, status, headers, config) {
+                    console.log(data, status, headers, config);
+                });
+            }
+
+            $scope.getProductDetail = function(goalProductDetail,index)
+            {
+                var id = 0;
+                for(var i = 0;i< goalProductDetail.length;i++)
+                {
+                    if(goalProductDetail[i].IsDelete == false)
+                    {
+                        if(id == index)
+                        {
+                            return goalProductDetail[i];
+                        }
+                        id ++;
+                    }
+                   
+                }
+            }
+
+            $scope.addNewProduct = function(goalProductDetail)
+            {
+                if(confirm('Bạn có thực sự muốn thêm một Mã sản phẩm khác?'))
+                {
+                    var newProduct = {
+                        GoalDetailId : goalProductDetail[0].GoalDetailId,
+                        IsDelete : false
+                    }
+                    goalProductDetail.push(newProduct);
+                }
+                return false;
+            }
+            $scope.removeProduct = function(productDetail)
+            {
+                if(confirm('Bạn có thực sự muốn xóa Mã sản phẩm này?'))
+                {
+                    $scope.$apply(function() {
+                        productDetail.IsDelete = true;
+                    });
+                    
+                }
+            }
+
+            $scope.NoRow = function(array)
+            {
+                var result = 0;
+                for(var i =0;i< array.length;i++)
+                {
+                    var count = array[i].length;
+                    for(var j = 0;j<array[i].length;j++)
+                    {
+                        if(array[i][j].IsDelete == true)
+                            count -= 1;
+                    }
+                    
+                    if(result < count)
+                        result = count;
+                }
+                return result;
+            }
+
+            $scope.range = function(min, max, step) {
+                step = step || 1;
+                var input = [];
+                for (var i = min; i <= max; i += step) {
+                    input.push(i);
+                }
+                return input;
+            };
+            $scope.noDelete = function(item)
+            {
+                return item.IsDelete === false;
+            }
+            
+            $scope.cloneValue = function(team,x, y, value, type)
+            {
+                var ischeck = false;
+                for(var j = 0; j < team.GoalProductDetailList.length; j++)
+                {
+                    for(var k = 0; k < team.GoalProductDetailList[j].length; k++)
+                    {
+                        if(ischeck == true)
+                        {
+                            if(type == "productid")
+                            {
+                                $scope.$apply(function () {
+                                    team.GoalProductDetailList[j][k].ProductId = value;
+                                });
+                            }
+                            else if(type == "quantity")
+                            {
+                                $scope.$apply(function () {
+                                    team.GoalProductDetailList[j][k].Quantity = value;
+                                });
+                            }
+                                    
+                        }
+
+                        if(ischeck == false && j == x && k == y)
+                        {
+                            ischeck = true;
+                        }
+                    }
+                }
+            }
+            
+            $scope.setproductdetail = function (team, productdetail,position, x, y)
+            {
+                $scope.datatemp.Team = team;
+                $scope.datatemp.ProductDetail = productdetail;
+                $scope.datatemp.Position = position;
+                $scope.datatemp.X = x;
+                $scope.datatemp.Y = y;
+            }
+            $('.container-div').on('mouseenter','[data-toggle="tooltip"]', function(){
+                $(this).tooltipster({
+                    multiple: true,
+                    theme: 'tooltipster-shadow',
+                    contentAsHTML: true,
+                    autoClose: true,
+                    trigger: 'click',
+                    interactive: true,
+                    animation: 'fade',
+                    delay: 0,
+                    maxWidth: 600,
+                    speed: 100,
+                    functionBefore: function (origin, continueTooltip) {
+                        continueTooltip();        
+                        var content = '';
+                        if($scope.datatemp.ProductDetail != null && $scope.datatemp.Position != 0)
+                        {
+                            content = '<div class="col-lg-12">' +
+                                    '<div class="row" id="containeryoutube">' +
+                                        '<div class="col-lg-5">' +
+                                            '<input type="button" id="copyproductid" name="saveyoutubeplay" class="btn btn-primary" value="Sao chép mã hàng">' +
+                                        '</div>' +
+                                        '<div class="col-lg-5">' +
+                                            '<input type="button" id="copyquantity" class="btn btn-primary" value="Sao chép mục tiêu">' +
+                                        '</div>' +
+                                        '<div class="col-lg-2">' +
+                                            '<input type="button" id="deleteproduct" name="saveyoutubeplay" class="btn btn-danger" value="Xoá">' +
+                                        '</div>' +
+                                            '</div>' +
+                                    '</div>';
+                        }else
+                        {
+                            content = '<div class="col-lg-12">' +
+                                    '<div class="row" id="containeryoutube">' +
+                                        '<div class="col-lg-6">' +
+                                            '<input type="button" id="copyproductid" name="saveyoutubeplay" class="btn btn-primary" value="Sao chép mã hàng">' +
+                                        '</div>' +
+                                        '<div class="col-lg-6">' +
+                                            '<input type="button" id="copyquantity" class="btn btn-primary" value="Sao chép mục tiêu">' +
+                                        '</div>' +
+                                        '</div>' +
+                                '</div>';
+                        }
+                        origin.tooltipster('content', content);
+
+                    },
+                    functionReady: function (origin, tooltipEl) {
+                        $(tooltipEl).on('click', '#deleteproduct', function () {
+                            $scope.removeProduct($scope.datatemp.ProductDetail);
+                            
+                        });
+
+                        $(tooltipEl).on('click', '#copyquantity', function () {
+                            if($scope.datatemp.ProductDetail.Quantity != null)
+                            {
+                                $scope.cloneValue($scope.datatemp.Team, $scope.datatemp.X, $scope.datatemp.Y,$scope.datatemp.ProductDetail.Quantity, 'quantity');                            
+                            }
+                            $(tooltipEl).tooltipster('hide');
+                        });
+
+                        $(tooltipEl).on('click', '#copyproductid', function () {
+                            if($scope.datatemp.ProductDetail.ProductId != null)
+                            {
+                                $scope.cloneValue($scope.datatemp.Team, $scope.datatemp.X, $scope.datatemp.Y,$scope.datatemp.ProductDetail.ProductId, 'productid');                            
+                            }
+                            $(tooltipEl).tooltipster('hide');
+                        });
+                    }
+                });
+            });
+        });
+
+        app.directive('ngEsc', function () {
+            return function (scope, element, attrs) {
+                element.bind("keydown keypress keyup", function (event) {
+                    if(event.which === 27) {
+                        alert("asdasd");
+
+                        event.preventDefault();
+                    }
+                });
+            };
+        });
+
+        app.directive('hideZero', [function () {
+            return {
+                require: '?ngModel', // get a hold of NgModelController
+                link: function (scope, element, attrs, ngModel) {
+
+                    // Specify how UI should be updated
+                    ngModel.$formatters.push(function (value) {
+                        if (value === 0) {
+                            // If the value is zero, return a blank string.
+                            return '';
+                        }
+
+                        return value;
+                    });
+                }
+            };
+        }]);
+
+        app.directive('modalRevisions', function () {
+            return {
+                template: '<div class="modal fade">' +
+                    '<div class="modal-dialog modal-lg">' +
+                      '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                          '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
+                          '<h4 class="modal-title">{{ title }}</h4>' +
+                        '</div>' +
+                        '<div class="modal-body" ng-transclude></div>' +
+                        '<div class="modal-footer">' +
+                            '<button type="button" class="btn btn-success" data-dismiss="modal"><i class="fa fa-check"></i>OK</button>' +
+                        '</div>' +
+                      '</div>' +
+                    '</div>' +
+                  '</div>',
+                restrict: 'E',
+                transclude: true,
+                replace: true,
+                scope: {
+                },
+                link: function postLink(scope, element, attrs) {
+                    scope.title = attrs.title;
+                    scope.id = attrs.id;
+                }
+            };
+        });
+
+        app.directive('convertToNumber', function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, element, attrs, ngModel) {
+                    ngModel.$parsers.push(function (val) {
+                        return parseInt(val, 10);
+                    });
+                    ngModel.$formatters.push(function (val) {
+                        return '' + val;
+                    });
+                }
+            };
+        });
+
+        app.directive('onlyDigits', function () {
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function (scope, element, attr, ctrl) {
+                    function inputValue(val) {
+                        if (val) {
+                            var digits = val.replace(/[^0-9.]/g, '');
+
+                            if (digits.split('.').length > 2) {
+                                digits = digits.substring(0, digits.length - 1);
+                            }
+
+                            if (digits !== val) {
+                                ctrl.$setViewValue(digits);
+                                ctrl.$render();
+                            }
+
+                            return parseFloat(digits);
+                        }
+                        return undefined;
+                    }            
+                    ctrl.$parsers.push(inputValue);
+                }
+            };
+        });
+        
+        app.directive('onlyDigits60', function () {
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function (scope, element, attr, ctrl) {
+                    function inputValue(val) {
+                        if (val) {
+                            var digits = val.replace(/[^0-9.]/g, '');
+
+                            if (digits.split('.').length > 2) {
+                                digits = digits.substring(0, digits.length - 1);
+                            }
+
+                           
+
+                            if (digits !== val) {
+                                ctrl.$setViewValue(digits);
+                                ctrl.$render();
+                            }
+
+                            if (parseFloat(digits) <= 60 )
+                            {
+                                ctrl.$setViewValue(digits);
+                                ctrl.$render();
+                            }else
+                            {
+                                digits = '';
+                                ctrl.$setViewValue(digits);
+                                ctrl.$render();
+                            }
+
+                            return parseFloat(digits);
+                        }
+                        return undefined;
+                    }            
+                    ctrl.$parsers.push(inputValue);
+                }
+            };
+        });      
+        app.directive("multipleSelect", function()
+        {
+            return {
+                link: function (scope, element, attr, ctrl) 
+                {
+                    //console.log(element);
+                    function getSelectValues(select) {
+                        var result = [];
+                        //console.log(select.options);
+                        var options = select && select.options;
+                        var opt;
+
+                        for (var i=0, iLen=options.length; i<iLen; i++) {
+                            opt = options[i];
+
+                            if (opt.selected) {
+                                result.push(opt.value || opt.text);
+                            }
+                        }
+                        return result;
+                    }
+                    //console.log(getSelectValues(element[0]));
+                    $(element).multiselect(
+                        {
+                            buttonWidth: '100%',
+                            buttonClass: 'cell-input',
+                            nonSelectedText: '',
+                        });
+                    // Watch for any changes to the length of our select element
+                    scope.$watch(function () {
+                        return element[0].length;
+                    }, function () {
+                        element.multiselect('rebuild');
+                    });
+
+                    // Watch for any changes from outside the directive and refresh
+                    scope.$watch(attr.ngModel, function () {
+                        element.multiselect('refresh');
+                    });
+                }
+
+            }
+        });
+    </script>
+}

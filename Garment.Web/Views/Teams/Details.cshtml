@@ -1,0 +1,339 @@
+﻿@model Team
+@{
+    ViewBag.Title = Model.Name;
+    var d = DateTime.Now;
+    var today = d.ToString("dd/MM/yyyy");
+    var startDate = new DateTime(d.Year, d.Month, 1);
+    int year = DateTime.Now.Year;
+    DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+    Calendar cal = dfi.Calendar;
+    int num = cal.GetWeekOfYear(new DateTime(2016, 1, 1), dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+}
+<div ng-app="garmentApp" class="main-box" ng-controller="teamController">
+    <div class="main-box-header clearfix">
+        <div class="col-md-3">
+            <a href="/Factories/details?id=@Model.FactoryId" title="Trở về @Model.Factory.Name">
+                <i class="fa fa-arrow-left"></i>
+                <span>Trở về @Model.Factory.Name</span>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <h1>@Model.Name</h1>
+        </div>
+        <div class="form-group col-md-3 pull-right">
+            <input type="text" class="form-control" name="daterange" id="daterange" />
+        </div>
+        <div class="form-group pull-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Chu kỳ" data-toggle="dropdown" aria-expanded="false">
+                    Chu kỳ <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" role="menu" id="range">
+                    <div id="wrapperDivRange" class="dropdownchild">
+                        <p>
+                            <a href="#" class="selectpicker" data-display="Chu kỳ 30 ngày" data-start="@d.AddDays(-30).ToString("dd/MM/yyyy")" data-end="@d.ToString("dd/MM/yyyy")" data-my="" range-select>Chu kỳ 30 ngày</a>
+                        </p>
+                        <p>
+                            <a href="#" class="selectpicker" data-display="Chu kỳ 90 ngày" data-start="@d.AddDays(-90).ToString("dd/MM/yyyy")" data-end="@d.ToString("dd/MM/yyyy")" data-my="" range-select>Chu kỳ 90 ngày</a>
+                        </p>
+                        <p>
+                            <a href="#" class="selectpicker" data-display="Chu kỳ 180 ngày" data-start="@d.AddDays(-180).ToString("dd/MM/yyyy")" data-end="@d.ToString("dd/MM/yyyy")" data-my="" range-select>Chu kỳ 180 ngày</a>
+                        </p>
+                        <p>
+                            <a href="#" class="selectpicker" data-display="Chu kỳ 365 ngày" data-start="@d.AddYears(-1).ToString("dd/MM/yyyy")" data-end="@d.ToString("dd/MM/yyyy")" data-my="" range-select>Chu kỳ 365 ngày</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Tuần" data-toggle="dropdown" aria-expanded="false">
+                    Tuần <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" role="menu" id="week" style="height:150px; overflow: auto">
+                    <div id="wrapperDivWeek" class="dropdownchild">
+
+                        @for (int i = 0; i < 10; i++)
+                        {
+                            //--Tuần tính từ T7 tuần trước đển T6 tuần hiện tại--//
+                            var currDay = d.DayOfWeek;
+                            DateTime prevSat = DateTime.Now;
+                            //cn
+                            if (currDay == 0)
+                            {
+                                prevSat = d.AddDays(-6);
+                            }
+                            else
+                            {
+                                int delta = DayOfWeek.Monday - d.DayOfWeek;
+                                prevSat = d.AddDays(delta);
+                            }
+                            var beginWeek = prevSat.ToString("dd/MM/yyyy");
+                            var endWeek = prevSat.AddDays(6).ToString("dd/MM/yyyy");
+                            d = prevSat.AddDays(-1);
+                            int numweek = 0;
+                            if (DateTime.Now.Year == prevSat.Year)
+                            {
+                                numweek = cal.GetWeekOfYear(prevSat.AddDays(-1), dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                            }
+                            else
+                            {
+                                numweek = cal.GetWeekOfYear(prevSat, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                            }
+
+                            <p data-date="@d.AddDays(+1)"><a href="#" class="selectpicker" data-display="Tuần @numweek / @prevSat.Year" data-start="@beginWeek" data-end="@endWeek" data-my="@prevSat.AddDays(6)" range-select>Tuần từ @beginWeek - @endWeek ( @numweek )</a></p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle selectparent" id="initMonth" data-default="Tháng" data-toggle="dropdown" aria-expanded="false">
+                    Tháng <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" role="menu" id="month" style="height:150px; overflow: auto">
+                    <div id="wrapperDivMonth" class="dropdownchild">
+                        @{
+                            d = DateTime.Now;
+                        }
+                        @for (int i = 0; i < 10; i++)
+                        {
+                            var month = d.AddMonths(i * -1);
+                            var dateTemp = new DateTime(month.Year, month.Month, 1);
+                            var firstDayOfMonth = dateTemp.ToString("dd/MM/yyyy");
+                            var lastDayOfMonth = dateTemp.AddMonths(1).AddDays(-1).ToString("dd/MM/yyyy");
+                            <p data-date="@dateTemp.AddMonths(-1)"><a href="#" class="selectpicker" data-display="@month.Month / @month.Year" data-start="@firstDayOfMonth" data-end="@lastDayOfMonth">@month.Month / @month.Year</a></p>
+                        }
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Quý" data-toggle="dropdown" aria-expanded="false">
+                    Quý <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" role="menu" id="quarter" style="height:100px; overflow: auto">
+                    <div id="wrapperDivQuarter" class="dropdownchild">
+                        @{
+                            DateTime dateQuarter = DateTime.Now;
+//DateTime d = (d.Month - 1) / 3 + 1;
+                        }
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            int quarter = (dateQuarter.Month - 1) / 3 + 1;
+                            Tuple<DateTime, DateTime> date = Extensions.SetLastQuarterDates(quarter, dateQuarter.Year);
+                            <p data-date="@date.Item1.ToString("dd/MM/yyyy")"><a href="#" class="selectpicker" data-display="Quý @quarter / @dateQuarter.Year" data-start="@date.Item1.ToString("dd/MM/yyyy")" data-end="@date.Item2.ToString("dd/MM/yyyy")">Quý @quarter / @dateQuarter.Year</a></p>
+                            dateQuarter = dateQuarter.AddMonths(-3);
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Năm" data-toggle="dropdown" aria-expanded="false">
+                    Năm <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu" role="menu" id="year" style="height:150px; overflow: auto">
+                    <div id="wrapperDivYear" class="dropdownchild">
+                        @{
+                            d = DateTime.Now;
+                        }
+                        @for (int i = 0; i < 10; i++)
+                        {
+                            var yr = d.AddYears(i * -1);
+                            var dateTemp = new DateTime(yr.Year, 1, 1);
+                            var firstDayOfYear = dateTemp.ToString("dd/MM/yyyy");
+                            var lastDayOfYear = dateTemp.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy");
+                            <p data-date="@firstDayOfYear"><a href="#" class="selectpicker" data-display="@yr.Year" data-start="@firstDayOfYear" data-end="@lastDayOfYear">@yr.Year</a></p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+    </div>
+    <div class="main-box-body clearfix">
+        <div class="tabs-wrapper">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#bieu-do-sx" data-toggle="tab">Biểu đồ sản xuất</a>
+                </li>
+                <li><a href="#bieu-do-su-co" data-toggle="tab" class="btn-error-chart">Biểu đồ sự cố</a></li>
+                <li><a href="#bieu-do-su-co-chi-tiet" data-toggle="tab" class="btn-error-chart">Biểu đồ sự cố chi tiết</a></li>
+                <li><a href="#bieu-do-nhan-su" data-toggle="tab" class="btn-error-chart">Biểu đồ nhân sự</a></li>
+            </ul>
+            <div class="tab-content tab-content-body">
+                <div class="tab-pane active" id="bieu-do-sx">
+                    <div class="row">
+                        <div id="chart" class="col-md-9"></div>
+                        <div class="col-md-3">
+                            <div id="fixed-tooltip">
+                                <h4 class="title"></h4>
+                                <p class="content"></p>
+                                <p class="buttons"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="bieu-do-su-co">
+                    <div class="row">
+                        <div id="error-chart-2"></div>
+                    </div>
+                    <div class="row table-responsive" style="margin-left: 150px" id="table-error-wrapper-2">
+                        <table class="table table-bordered" id="table-error-2">
+                            <colgroup>
+                                <col />
+                                <col ng-class="{'gray-bg': date.weekday ==  'CN'}" ng-repeat="date in dates track by $index" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th style="border-top:none; border-left: none;border-bottom: none"></th>
+                                    <th ng-repeat="month in months" colspan="{{month.value}}" class="text-center">Tháng {{month.month}}/{{month.year}}</th>
+
+                                </tr>
+                                <tr>
+                                    <th style="border-top:none; border-left: none; border-bottom: none"></th>
+                                    <th ng-repeat="date in dates track by $index" class="text-center">{{date.date}}<br />{{date.weekday}}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="error in errordata2" on-finish-render="scrollLeft">
+                                    <td>{{error.name}}</td>
+                                    <td ng-repeat="value in error.cells track by $index" ng-style="value>0 && {'background-color':error.color}" class="text-center"><b class="txt-white">{{value > 0 ? value : "&nbsp;"}}</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <div class="tab-pane" id="bieu-do-su-co-chi-tiet">
+                    <div class="row">
+                        <div id="error-chart"></div>
+                    </div>
+                    <div class="row table-responsive" style="margin-left: 150px" id="table-error-wrapper">
+                        <table class="table table-bordered" id="table-error">
+                        <colgroup>
+                            <col />
+                            <col ng-class="{'gray-bg': date.weekday ==  'CN'}" ng-repeat="date in dates track by $index" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th style="border-top:none; border-left: none;border-bottom: none"></th>
+                                <th ng-repeat="month in months" colspan="{{month.value}}" class="text-center">Tháng {{month.month}}/{{month.year}}</th>
+
+                            </tr>
+                            <tr>
+                                <th style="border-top:none; border-left: none; border-bottom: none"></th>
+                                <th ng-repeat="date in dates track by $index" class="text-center">{{date.date}}<br />{{date.weekday}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="error in errordata" on-finish-render="scrollLeft">
+                                <td>{{error.name}}</td>
+                                <td ng-repeat="value in error.cells track by $index" ng-style="value>0 && {'background-color':error.color}" class="text-center"><b class="txt-white">{{value > 0 ? value : "&nbsp;"}}</b></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="bieu-do-nhan-su">
+                    <div class="row">
+                        <div id="hr-chart"></div>
+                        <div class="row table-responsive" style="margin-left: 150px" id="table-hr-wrapper">
+                            <table class="table table-bordered" id="table-hr">
+                                <colgroup>
+                                    <col />
+                                    <col ng-class="{'gray-bg': date.weekday ==  'CN'}" ng-repeat="date in dates track by $index" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th style="border-top:none; border-left: none;border-bottom: none"></th>
+                                        <th ng-repeat="month in months" colspan="{{month.value}}" class="text-center">Tháng {{month.month}}/{{month.year}}</th>
+
+                                    </tr>
+                                    <tr>
+                                        <th style="border-top:none; border-left: none; border-bottom: none"></th>
+                                        <th ng-repeat="date in dates track by $index" class="text-center">{{date.date}}<br />{{date.weekday}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="status in hrdata" on-finish-render="scrollLeft">
+                                        <td>{{status.name}}</td>
+                                        <td ng-repeat="value in status.data track by $index" class="text-center"><b>{{value.y != null ? value.y : "&nbsp;"}}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>% Có mặt</td>
+                                        <td ng-repeat="value in hrdata[2].data track by $index" class="text-center"><b>{{hrdata[3].data[$index].y ? (value.y*100/hrdata[3].data[$index].y | number:1) + "%" : "&nbsp;"}}</b></td>
+                                    </tr>
+                                </tbody>
+                                @*<tfoot>
+                                    <tr>
+                                        <th>Tổng số</th>
+                                        <th ng-repeat="date in dates">
+                                            {{hrdata[0].data[$index].y + hrdata[1].data[$index].y + hrdata[2].data[$index].y}}
+                                        </th>
+                                    </tr>
+                                </tfoot>*@
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles{
+
+    <link href="~/Content/daterangepicker.css" rel="stylesheet" />
+    <style>
+        .table > thead > tr > th:first-child
+        {
+            position: absolute;
+            display: inline-block;
+            /*background-color:red;*/
+            /*height:100%;*/
+            width: 170px;
+            margin-left: -170px;
+        }
+        .table > tbody > tr > td:first-child, .table > tfoot > tr > th:first-child
+        {
+            position: absolute;
+            display: inline-block;
+            /*background-color:red;*/
+            /*height:100%;*/
+            width: 170px;
+            margin-left: -170px;
+
+        }
+        /*.table > thead > tr > th:nth-child(2)
+        {
+            margin-left: 100px;
+        }
+        .table > tbody > tr > td:nth-child(2)
+        {
+            margin-left:100px !important;
+
+        }*/
+    </style>
+}
+@section Scripts
+{
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/daterangepicker.js"></script>
+    @*<script src="~/Scripts/highcharts/highcharts.js"></script>*@
+    <script src="~/Scripts/highcharts/highstock.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script>
+        var teamId = @Model.Id;
+    </script>
+    <script src="~/Scripts/views/teams.details.js"></script>
+}
+

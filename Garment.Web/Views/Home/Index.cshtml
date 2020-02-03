@@ -1,0 +1,343 @@
+﻿@{
+    ViewBag.Title = "Trang chủ";
+    //Layout = "~/Views/Shared/_DisplayOnlyLayout.cshtml";
+}
+
+<div class="goal-manage" ng-app="garmentApp" ng-controller="goalscontroller">
+    <div class="row row-eq-height xn" ng-repeat="factory in factoriesinfo">
+        <div class="col-md-4">
+            <div class="main-box">
+               
+                <div class="icon-box" style="position: absolute;left: 10px;top: 10px;">
+                    <a href="/Factories/Edit/{{factory.FactoryId}}" class="btn pull-left  bg-primary">
+                        <i class="fa fa-cog"></i>
+                    </a>
+                </div>
+               
+
+                <div class="small-xn-box {{factory.Color}}-bg">
+                    <a href="/Factories/details?id={{factory.FactoryId}}">
+                        <span class="name">{{factory.FactoryName}}</span>
+                    </a>
+
+                </div>
+                <div class="main-box-body clearfix">
+                    <div class="col-md-4">
+                        <div class="project-box-content">
+                            <div class="chart" style="margin: 0 10px;" ng-class="factory.Color" options="factory.pieChartOptions" percent="factory.PercentProcess" easypiechart>
+                                <div class="content-wrapper">
+                                    <div class="content-middle">
+                                        <span class="percent">{{factory.PercentProcess}}</span>%<br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+
+                        <h5><strong>Tiến độ</strong></h5>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                Cần làm
+                                <div class="pull-right" ng-class="factory.Color">{{factory.CurrentSessionQuantity - factory.CurrentSessionQuantityProduct}}</div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                Thực tế
+                                <div class="pull-right green">{{factory.CurrentSessionQuantityProduct}}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                Tổng
+                                <div class="pull-right" ng-class="factory.Color">{{factory.CurrentSessionQuantity}}</div>
+                            </div>
+                        </div>
+
+                        <h5><strong>Tổ may</strong></h5>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                Gặp sự cố
+                                <div class="pull-right" ng-class="factory.Color">{{factory.TeamCount - factory.GoodTeamCount}}</div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                Đạt
+                                <div class="pull-right green">{{factory.GoodTeamCount}}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                Tổng
+                                <div class="pull-right" ng-class="factory.Color">{{factory.TeamCount}}</div>
+                            </div>
+                        </div>
+
+                        <h5><strong>Công nhân</strong></h5>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                Vắng mặt
+                                <div class="pull-right" ng-class="factory.Color">{{factory.TotalNoEmployeeDefault - factory.TotalNoEmployeeAvailable}}</div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                Có mặt
+                                <div class="pull-right green">{{factory.TotalNoEmployeeAvailable}}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                Tổng
+                                <div class="pull-right">{{factory.TotalNoEmployeeDefault}}</div>
+                            </div>
+                        </div>
+
+                        <h5><strong>Thời gian</strong></h5>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                Còn lại
+                                <div class="pull-right" ng-class="factory.Color">{{factory.TimeLeft}}</div>
+                            </div>
+
+                            <div class="col-sm-4">
+                                Đã qua
+                                <div class="pull-right green">{{factory.TimePass}}</div>
+                            </div>
+                            <div class="col-sm-4">
+                                Tổng
+                                <div class="pull-right">{{factory.TimeTotal}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Request.IsAuthenticated)
+                {
+
+                    <div class="main-box-body clearfix text-center" style="margin:10px">
+                        <span class="">
+                            <a class="btn btn-primary" href="/Goals/FactoryCreate?factoryId={{factory.FactoryId}}" target="_blank" title="Màn hình nhập của xí nghiệp"><i class="fa fa-pencil"></i> Màn hình nhập xí nghiệp</a>
+                        </span>
+                        <span class="">
+                            <a class="btn btn-primary" href="/QCReport/FactoryCreate?factoryId={{factory.FactoryId}}" target="_blank" title="Màn hình nhập QC"><i class="fa fa-pencil"></i> Màn hình nhập QC</a>
+                        </span>
+                    </div>
+                }
+            </div>
+            
+        </div>
+        <div class="col-md-8">
+            <div class="main-box fullheight clearfix">
+                <table class="table borderless table-responsive" ng-if="factory.CountProblem > 0">
+                    <thead>
+                        <tr class="{{factory.Color}}-bg">
+                            <th>Tổ may</th>
+                            <th>Mã hàng</th>
+                            <th>Nguyên nhân</th>
+                            <th>Ghi chú</th>
+                        </tr>
+                    </thead>
+                    <tbody ng-repeat="team in factory.TeamDetails | orderBy: sortBy.value: reverse" ng-if="team.HasProblem">
+                        <tr>
+                            <td rowspan="{{team.HomeTeamSessions[team.CurrentGoalSessionId].LastHour.ProductDetails.length + 1}}">
+                                {{team.TeamName}}
+                            </td>
+                        </tr>
+                        <tr ng-repeat="product in team.HomeTeamSessions[team.CurrentGoalSessionId].LastHour.ProductDetails">
+                            <td>
+                                <span >{{product.ProductId}}</span>
+                            </td>
+                            <td>
+                                <img ng-repeat="reason in product.Reasons" ng-src="/Content/images/errors/{{reason.ErrorCode}}.png" width="20" height="20" style="vertical-align: middle; margin: 5px;" />
+                            </td>
+                            <td>{{product.Comment}}</td>
+                        </tr>
+                        @*<tr ng-repeat="product in team.HomeTeamSessions[team.CurrentGoalSessionId].LastHour.ProductDetails" ng-if="product.ProductId">
+                            <td colspan="3">
+
+                                <div class="product-id">
+                                    {{product.ProductId}}
+
+                                    <div class="pull-right">
+                                        <i style="font-size:24px; margin: 5px" ng-if="product.Reasons.length == 0 && team.Color == 'green'" class="ion-ios-checkmark green"></i>
+                                        <div ng-if="product.Reasons.length != 0">
+                                            <img ng-repeat="reason in product.Reasons" ng-src="/Content/images/errors/{{reason.ErrorCode}}.png" width="20" height="20" style="vertical-align: middle; margin: 5px;" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div ng-if="product.Comment" class="comment red">
+                                    {{product.Comment}}
+                                </div>
+
+                            </td>
+                        </tr>*@
+                    </tbody>
+                </table>
+                <div class="factory-notice green" ng-if="factory.CountProblem == 0 && factory.CurrentSessionQuantityProduct < factory.CurrentSessionQuantityTarget">
+                    <p>Tại thời điểm {{factory.LastHourEnd}} các tổ đều đạt kế hoạch theo giờ.</p>
+                    <p>Tổng mục tiêu tới {{factory.LastHourEnd}} vẫn còn thiếu {{factory.CurrentSessionQuantityTarget - factory.CurrentSessionQuantityProduct}} sản phẩm</p>
+                </div>
+                <div class="factory-notice green" ng-if="factory.CountProblem == 0 && factory.CurrentSessionQuantityProduct == factory.CurrentSessionQuantityTarget">Xí nghiệp đang hoàn thành tốt kế hoạch</div>
+            </div>
+        </div>
+      
+
+        
+
+       
+        @*<div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <a href="/Factories/details?id={{factory.FactoryId}}">
+                <div class="main-box-body clearfix">
+                    <img src="~/Content/assets/g1.jpg" />
+                </div>
+            </a>
+        </div>
+
+        <div class="main-box small-xn-box">
+            <a href="/Factories/details?id={{factory.FactoryId}}">
+                <span class="name">{{factory.FactoryName}}</span>
+            </a>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body produce-box clearfix">
+                <h1 class="header">THỰC TẾ / MỤC TIÊU</h1>
+                <h1 class="value">{{factory.CurrentSessionQuantityProduct}} / {{factory.CurrentSessionQuantity}}</h1>
+            </div>
+        </div>
+        
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">TIẾN ĐỘ</span>
+                <span class="info-right">{{factory.PercentProcess}}%</span>
+            </div>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">TỔ MAY</span>
+                <span class="info-right">{{factory.TeamCount}}</span>
+            </div>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">CÔNG NHÂN</span>
+                <span class="info-right">{{factory.TotalNoEmployee}} / {{factory.TotalNoEmployeeDefault}}</span>
+            </div>
+        </div>
+
+        @if (Request.IsAuthenticated)
+        {
+            <div class="main-box clearfix">
+                <header class="main-box-header clearfix"></header>
+                <div class="main-box-body clearfix">
+                    <span class="info-left">
+                        <a class="btn btn-primary" href="/Goals/FactoryCreate?factoryId={{factory.FactoryId}}" target="_blank" title="Màn hình nhập của xí nghiệp"><i class="fa fa-pencil"></i> Màn hình nhập cho xí nghiệp</a>
+                    </span>
+                </div>
+            </div>
+        }*@
+
+
+    </div>
+
+</div>
+
+@section Styles
+{
+    <link href="~/Content/views/factories.details.css" rel="stylesheet" />
+    
+    <style>
+        .row.xn
+        {
+            margin-bottom: 15px;
+        }
+        .row-eq-height {
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: -ms-flexbox;
+          display:         flex;
+        }
+        .fullheight
+        {
+            height: 100%;
+        }
+        .factory-notice{
+            display: flex;
+            justify-content: center;
+            align-content: center;
+            flex-direction: column;
+            text-align: center;
+            height: 100%;
+            font-size: 30px;
+            font-weight: bold;
+        }
+    </style>
+}
+
+@section Scripts
+{
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/angular.easypiechart.js"></script>
+    <script>
+        
+        Number.prototype.padLeft = function (base, chr) {
+            var len = (String(base || 10).length - String(this).length) + 1;
+            return len > 0 ? new Array(len).join(chr || '0') + this : this;
+        }
+        var app = angular.module("garmentApp", ['easypiechart']);
+        app.controller("goalscontroller", function ($scope, $interval, $http) {
+            var update = function () {
+                var now = new Date();
+                var date = [now.getDate().padLeft(),
+                            (now.getMonth() + 1).padLeft(),
+                            now.getFullYear()].join('/');
+                $http.get("/api/Goals/FindAllFactory?date=" + date)
+                .then(function (response) {
+                    $scope.factoriesinfo = response.data;
+                    $scope.today = now.getDate() + '/' + (now.getMonth() + 1).padLeft();
+
+                    for (var i = 0; i < $scope.factoriesinfo.length; i++) {
+                        var factory = $scope.factoriesinfo[i];
+                        var good = factory.CurrentSessionQuantityProduct >= factory.CurrentSessionQuantityTarget;
+                        var noData = factory.CurrentSessionQuantityProduct == 0 && factory.CurrentSessionQuantityTarget == 0;
+                        factory.Color = good ? 'green' : 'red';
+                        factory.pieChartOptions = {
+                            barColor: noData ? '#808285' : good ? '#2BB673' : '#EF4541',
+                            trackColor: '#f2f2f2',
+                            scaleColor: false,
+                            lineWidth: 8,
+                        };
+                        factory.CountProblem = 0;
+                        for (var j = 0; j < factory.TeamDetails.length; j++) {
+                            var team = factory.TeamDetails[j];
+                            team.HasProblem = false;
+                            if (team.HomeTeamSessions[team.CurrentGoalSessionId] && team.HomeTeamSessions[team.CurrentGoalSessionId].LastHour)
+                            {
+                                var lastHour = team.HomeTeamSessions[team.CurrentGoalSessionId].LastHour;
+                                team.HasProblem = lastHour.ProductDetails.some(function (product, index, array)
+                                {
+                                    var result = product.Comment || product.Reasons.length > 0 || product.ProduceQuantity < product.Quantity;
+                                    if (result) factory.CountProblem++;
+                                    return result;
+                                })
+                            }
+
+                        }
+                    }
+                });
+            }
+            update();
+            $interval(update, 100000);
+        });
+
+        app.filter('abs', function () {
+            return function (val) {
+                return Math.abs(val);
+            }
+        });
+
+       
+    </script>
+}

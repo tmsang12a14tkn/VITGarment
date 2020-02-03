@@ -1,0 +1,515 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{64ED82F3-866E-4834-9BE1-D4E313B6E9EF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Data</RootNamespace>
+    <AssemblyName>Data</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccessLayer\GarmentContext.cs" />
+    <Compile Include="Helpers\DataFormatConverter.cs" />
+    <Compile Include="Migrations\201606040522193_firstinit.cs" />
+    <Compile Include="Migrations\201606040522193_firstinit.Designer.cs">
+      <DependentUpon>201606040522193_firstinit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606060706444_change-db.cs" />
+    <Compile Include="Migrations\201606060706444_change-db.Designer.cs">
+      <DependentUpon>201606060706444_change-db.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606090531156_dow-template.cs" />
+    <Compile Include="Migrations\201606090531156_dow-template.Designer.cs">
+      <DependentUpon>201606090531156_dow-template.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606100416494_producequantity.cs" />
+    <Compile Include="Migrations\201606100416494_producequantity.Designer.cs">
+      <DependentUpon>201606100416494_producequantity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606100820222_manualproducequantity.cs" />
+    <Compile Include="Migrations\201606100820222_manualproducequantity.Designer.cs">
+      <DependentUpon>201606100820222_manualproducequantity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606200700075_teamsettings.cs" />
+    <Compile Include="Migrations\201606200700075_teamsettings.Designer.cs">
+      <DependentUpon>201606200700075_teamsettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606210432305_fix-team-setting.cs" />
+    <Compile Include="Migrations\201606210432305_fix-team-setting.Designer.cs">
+      <DependentUpon>201606210432305_fix-team-setting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606210449396_fix-team-setting-2.cs" />
+    <Compile Include="Migrations\201606210449396_fix-team-setting-2.Designer.cs">
+      <DependentUpon>201606210449396_fix-team-setting-2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606210946359_auto-team-setting.cs" />
+    <Compile Include="Migrations\201606210946359_auto-team-setting.Designer.cs">
+      <DependentUpon>201606210946359_auto-team-setting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606220757136_screenssetting.cs" />
+    <Compile Include="Migrations\201606220757136_screenssetting.Designer.cs">
+      <DependentUpon>201606220757136_screenssetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606230459182_setting-color.cs" />
+    <Compile Include="Migrations\201606230459182_setting-color.Designer.cs">
+      <DependentUpon>201606230459182_setting-color.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606260942190_factory.cs" />
+    <Compile Include="Migrations\201606260942190_factory.Designer.cs">
+      <DependentUpon>201606260942190_factory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606260952063_factory-2.cs" />
+    <Compile Include="Migrations\201606260952063_factory-2.Designer.cs">
+      <DependentUpon>201606260952063_factory-2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606281158327_ninthscreentime.cs" />
+    <Compile Include="Migrations\201606281158327_ninthscreentime.Designer.cs">
+      <DependentUpon>201606281158327_ninthscreentime.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606290838334_change-goaldetail.cs" />
+    <Compile Include="Migrations\201606290838334_change-goaldetail.Designer.cs">
+      <DependentUpon>201606290838334_change-goaldetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606300424407_fix-goaldetail.cs" />
+    <Compile Include="Migrations\201606300424407_fix-goaldetail.Designer.cs">
+      <DependentUpon>201606300424407_fix-goaldetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606300857541_goaldetail-minute.cs" />
+    <Compile Include="Migrations\201606300857541_goaldetail-minute.Designer.cs">
+      <DependentUpon>201606300857541_goaldetail-minute.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606300904231_goaldetail-minute-2.cs" />
+    <Compile Include="Migrations\201606300904231_goaldetail-minute-2.Designer.cs">
+      <DependentUpon>201606300904231_goaldetail-minute-2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201606301033140_goaldetail-sessionid.cs" />
+    <Compile Include="Migrations\201606301033140_goaldetail-sessionid.Designer.cs">
+      <DependentUpon>201606301033140_goaldetail-sessionid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607011010585_producttype.cs" />
+    <Compile Include="Migrations\201607011010585_producttype.Designer.cs">
+      <DependentUpon>201607011010585_producttype.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607030344120_detailrevision.cs" />
+    <Compile Include="Migrations\201607030344120_detailrevision.Designer.cs">
+      <DependentUpon>201607030344120_detailrevision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607040311230_fix-reasonid.cs" />
+    <Compile Include="Migrations\201607040311230_fix-reasonid.Designer.cs">
+      <DependentUpon>201607040311230_fix-reasonid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607050711533_fix-detailrevision.cs" />
+    <Compile Include="Migrations\201607050711533_fix-detailrevision.Designer.cs">
+      <DependentUpon>201607050711533_fix-detailrevision.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607130949504_noerror.cs" />
+    <Compile Include="Migrations\201607130949504_noerror.Designer.cs">
+      <DependentUpon>201607130949504_noerror.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607150853520_visible.cs" />
+    <Compile Include="Migrations\201607150853520_visible.Designer.cs">
+      <DependentUpon>201607150853520_visible.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607150909300_hide.cs" />
+    <Compile Include="Migrations\201607150909300_hide.Designer.cs">
+      <DependentUpon>201607150909300_hide.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607180315282_minute-numofworker.cs" />
+    <Compile Include="Migrations\201607180315282_minute-numofworker.Designer.cs">
+      <DependentUpon>201607180315282_minute-numofworker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201607190918323_productdetail.cs" />
+    <Compile Include="Migrations\201607190918323_productdetail.Designer.cs">
+      <DependentUpon>201607190918323_productdetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608100918290_producequantity-null.cs" />
+    <Compile Include="Migrations\201608100918290_producequantity-null.Designer.cs">
+      <DependentUpon>201608100918290_producequantity-null.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608110935340_addorderteam.cs" />
+    <Compile Include="Migrations\201608110935340_addorderteam.Designer.cs">
+      <DependentUpon>201608110935340_addorderteam.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608110937358_renameorderteam.cs" />
+    <Compile Include="Migrations\201608110937358_renameorderteam.Designer.cs">
+      <DependentUpon>201608110937358_renameorderteam.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608150917127_multi-reason.cs" />
+    <Compile Include="Migrations\201608150917127_multi-reason.Designer.cs">
+      <DependentUpon>201608150917127_multi-reason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608260413351_EmployeeAbsent.cs" />
+    <Compile Include="Migrations\201608260413351_EmployeeAbsent.Designer.cs">
+      <DependentUpon>201608260413351_EmployeeAbsent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201608290408035_absentwithoutreason.cs" />
+    <Compile Include="Migrations\201608290408035_absentwithoutreason.Designer.cs">
+      <DependentUpon>201608290408035_absentwithoutreason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609050254189_addcolorcodereason.cs" />
+    <Compile Include="Migrations\201609050254189_addcolorcodereason.Designer.cs">
+      <DependentUpon>201609050254189_addcolorcodereason.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609160456069_errorcode.cs" />
+    <Compile Include="Migrations\201609160456069_errorcode.Designer.cs">
+      <DependentUpon>201609160456069_errorcode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201609291007234_add-picture-factory.cs" />
+    <Compile Include="Migrations\201609291007234_add-picture-factory.Designer.cs">
+      <DependentUpon>201609291007234_add-picture-factory.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610130344070_factory-description.cs" />
+    <Compile Include="Migrations\201610130344070_factory-description.Designer.cs">
+      <DependentUpon>201610130344070_factory-description.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610161013091_team-visible.cs" />
+    <Compile Include="Migrations\201610161013091_team-visible.Designer.cs">
+      <DependentUpon>201610161013091_team-visible.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610180429418_session.cs" />
+    <Compile Include="Migrations\201610180429418_session.Designer.cs">
+      <DependentUpon>201610180429418_session.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610190255318_session-2.cs" />
+    <Compile Include="Migrations\201610190255318_session-2.Designer.cs">
+      <DependentUpon>201610190255318_session-2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610231325446_goaldetail-day.cs" />
+    <Compile Include="Migrations\201610231325446_goaldetail-day.Designer.cs">
+      <DependentUpon>201610231325446_goaldetail-day.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610240510065_factorysession-day.cs" />
+    <Compile Include="Migrations\201610240510065_factorysession-day.Designer.cs">
+      <DependentUpon>201610240510065_factorysession-day.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610271015462_remove-deprecated-goaldetail.cs" />
+    <Compile Include="Migrations\201610271015462_remove-deprecated-goaldetail.Designer.cs">
+      <DependentUpon>201610271015462_remove-deprecated-goaldetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610271456447_employee-teamsession.cs" />
+    <Compile Include="Migrations\201610271456447_employee-teamsession.Designer.cs">
+      <DependentUpon>201610271456447_employee-teamsession.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611021056202_teamsession-notwork.cs" />
+    <Compile Include="Migrations\201611021056202_teamsession-notwork.Designer.cs">
+      <DependentUpon>201611021056202_teamsession-notwork.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611040412110_goaldetail-totalemployee.cs" />
+    <Compile Include="Migrations\201611040412110_goaldetail-totalemployee.Designer.cs">
+      <DependentUpon>201611040412110_goaldetail-totalemployee.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612050855411_qc.cs" />
+    <Compile Include="Migrations\201612050855411_qc.Designer.cs">
+      <DependentUpon>201612050855411_qc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612130728245_specdetail.cs" />
+    <Compile Include="Migrations\201612130728245_specdetail.Designer.cs">
+      <DependentUpon>201612130728245_specdetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612130735091_specdetail-element.cs" />
+    <Compile Include="Migrations\201612130735091_specdetail-element.Designer.cs">
+      <DependentUpon>201612130735091_specdetail-element.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201612180828340_qcreport-session-product.cs" />
+    <Compile Include="Migrations\201612180828340_qcreport-session-product.Designer.cs">
+      <DependentUpon>201612180828340_qcreport-session-product.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\ApplicationUser.cs" />
+    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\Factory.cs" />
+    <Compile Include="Models\FactorySession.cs" />
+    <Compile Include="Models\Goal.cs" />
+    <Compile Include="Models\GoalDetail.cs" />
+    <Compile Include="Models\GoalDetailRevision.cs" />
+    <Compile Include="Models\GoalDetailTemplate.cs" />
+    <Compile Include="Models\LatestSummary.cs" />
+    <Compile Include="Models\ProduceHistory.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductType.cs" />
+    <Compile Include="Models\QC.cs" />
+    <Compile Include="Models\Reason.cs" />
+    <Compile Include="Models\Team.cs" />
+    <Compile Include="Models\TeamSession.cs" />
+    <Compile Include="Models\TeamSetting.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\EmployeeRepository.cs" />
+    <Compile Include="Repositories\GoalDetailRepository.cs" />
+    <Compile Include="Repositories\GoalRepository.cs" />
+    <Compile Include="Repositories\LatestSummaryRepository.cs" />
+    <Compile Include="Repositories\ProduceHistoryRepository.cs" />
+    <Compile Include="Repositories\TeamRepository.cs" />
+    <Compile Include="ViewModels\CreateRoleModel.cs" />
+    <Compile Include="ViewModels\DowScheduleView.cs" />
+    <Compile Include="ViewModels\EmployeeRegisterModel.cs" />
+    <Compile Include="ViewModels\FactoryModel.cs" />
+    <Compile Include="ViewModels\GoalTabView.cs" />
+    <Compile Include="ViewModels\LoginModel.cs" />
+    <Compile Include="ViewModels\QCModel.cs" />
+    <Compile Include="ViewModels\TeamModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201606040522193_firstinit.resx">
+      <DependentUpon>201606040522193_firstinit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606060706444_change-db.resx">
+      <DependentUpon>201606060706444_change-db.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606090531156_dow-template.resx">
+      <DependentUpon>201606090531156_dow-template.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606100416494_producequantity.resx">
+      <DependentUpon>201606100416494_producequantity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606100820222_manualproducequantity.resx">
+      <DependentUpon>201606100820222_manualproducequantity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606200700075_teamsettings.resx">
+      <DependentUpon>201606200700075_teamsettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606210432305_fix-team-setting.resx">
+      <DependentUpon>201606210432305_fix-team-setting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606210449396_fix-team-setting-2.resx">
+      <DependentUpon>201606210449396_fix-team-setting-2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606210946359_auto-team-setting.resx">
+      <DependentUpon>201606210946359_auto-team-setting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606220757136_screenssetting.resx">
+      <DependentUpon>201606220757136_screenssetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606230459182_setting-color.resx">
+      <DependentUpon>201606230459182_setting-color.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606260942190_factory.resx">
+      <DependentUpon>201606260942190_factory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606260952063_factory-2.resx">
+      <DependentUpon>201606260952063_factory-2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606281158327_ninthscreentime.resx">
+      <DependentUpon>201606281158327_ninthscreentime.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606290838334_change-goaldetail.resx">
+      <DependentUpon>201606290838334_change-goaldetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300424407_fix-goaldetail.resx">
+      <DependentUpon>201606300424407_fix-goaldetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300857541_goaldetail-minute.resx">
+      <DependentUpon>201606300857541_goaldetail-minute.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606300904231_goaldetail-minute-2.resx">
+      <DependentUpon>201606300904231_goaldetail-minute-2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201606301033140_goaldetail-sessionid.resx">
+      <DependentUpon>201606301033140_goaldetail-sessionid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607011010585_producttype.resx">
+      <DependentUpon>201607011010585_producttype.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607030344120_detailrevision.resx">
+      <DependentUpon>201607030344120_detailrevision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607040311230_fix-reasonid.resx">
+      <DependentUpon>201607040311230_fix-reasonid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607050711533_fix-detailrevision.resx">
+      <DependentUpon>201607050711533_fix-detailrevision.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607130949504_noerror.resx">
+      <DependentUpon>201607130949504_noerror.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607150853520_visible.resx">
+      <DependentUpon>201607150853520_visible.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607150909300_hide.resx">
+      <DependentUpon>201607150909300_hide.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607180315282_minute-numofworker.resx">
+      <DependentUpon>201607180315282_minute-numofworker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201607190918323_productdetail.resx">
+      <DependentUpon>201607190918323_productdetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608100918290_producequantity-null.resx">
+      <DependentUpon>201608100918290_producequantity-null.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608110935340_addorderteam.resx">
+      <DependentUpon>201608110935340_addorderteam.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608110937358_renameorderteam.resx">
+      <DependentUpon>201608110937358_renameorderteam.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608150917127_multi-reason.resx">
+      <DependentUpon>201608150917127_multi-reason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608260413351_EmployeeAbsent.resx">
+      <DependentUpon>201608260413351_EmployeeAbsent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201608290408035_absentwithoutreason.resx">
+      <DependentUpon>201608290408035_absentwithoutreason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609050254189_addcolorcodereason.resx">
+      <DependentUpon>201609050254189_addcolorcodereason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609160456069_errorcode.resx">
+      <DependentUpon>201609160456069_errorcode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201609291007234_add-picture-factory.resx">
+      <DependentUpon>201609291007234_add-picture-factory.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610130344070_factory-description.resx">
+      <DependentUpon>201610130344070_factory-description.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610161013091_team-visible.resx">
+      <DependentUpon>201610161013091_team-visible.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610180429418_session.resx">
+      <DependentUpon>201610180429418_session.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610190255318_session-2.resx">
+      <DependentUpon>201610190255318_session-2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610231325446_goaldetail-day.resx">
+      <DependentUpon>201610231325446_goaldetail-day.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610240510065_factorysession-day.resx">
+      <DependentUpon>201610240510065_factorysession-day.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610271015462_remove-deprecated-goaldetail.resx">
+      <DependentUpon>201610271015462_remove-deprecated-goaldetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610271456447_employee-teamsession.resx">
+      <DependentUpon>201610271456447_employee-teamsession.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611021056202_teamsession-notwork.resx">
+      <DependentUpon>201611021056202_teamsession-notwork.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611040412110_goaldetail-totalemployee.resx">
+      <DependentUpon>201611040412110_goaldetail-totalemployee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612050855411_qc.resx">
+      <DependentUpon>201612050855411_qc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612130728245_specdetail.resx">
+      <DependentUpon>201612130728245_specdetail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612130735091_specdetail-element.resx">
+      <DependentUpon>201612130735091_specdetail-element.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612180828340_qcreport-session-product.resx">
+      <DependentUpon>201612180828340_qcreport-session-product.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

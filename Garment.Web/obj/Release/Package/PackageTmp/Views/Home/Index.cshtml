@@ -1,0 +1,180 @@
+﻿@using System.Linq;
+@{
+    ViewBag.Title = "Trang chủ";
+    //Layout = "~/Views/Shared/_DisplayOnlyLayout.cshtml";
+}
+
+<div class="row goal-manage" ng-app="garmentApp" ng-controller="goalscontroller">
+    <div class="col-lg-4 xn" ng-repeat="factoryinfo in factoriesinfo">
+        <div class="main-box clearfix">
+            @*<header class="main-box-header clearfix"></header>*@
+            <a href="/Factories/details?id={{factoryinfo.FactoryId}}">
+                <div class="main-box-body clearfix">
+                    <img src="~/Content/assets/g1.jpg" />
+                </div>
+            </a>
+        </div>
+
+        <div class="main-box small-xn-box">
+            <a href="/Factories/details?id={{factoryinfo.FactoryId}}">
+                <span class="name">{{factoryinfo.FactoryName}}</span>
+            </a>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body produce-box clearfix">
+                <h1 class="headerquantity"><b>THỰC TẾ / MỤC TIÊU</b></h1>
+                <h1 class="sub-header"></h1>
+                <h1 class="value">{{factoryinfo.TotalQuantityProduct}} / {{factoryinfo.TotalQuantity}}</h1>
+            </div>
+            <div class="row">
+                <div class="col-lg-6" style="padding-right:1.5px;">
+                    <div class="main-box clearfix">
+                        <div class="main-box-body produce-box clearfix">
+                            <div class="header"><b>TIẾN ĐỘ</b></div>
+                            <div class="content">{{factoryinfo.PercentProcess}}%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" style="padding-left:1.5px;">
+                    <div class=" main-box clearfix">
+                        <div class="main-box-body produce-box clearfix">
+                            <div class="header"><b>THỜI GIAN CÒN LẠI</b></div>
+                            <div class="content">{{factoryinfo.GoalModels[0].TimeLeft}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6" style="padding-right:1.5px;">
+                    <div class="main-box clearfix">
+                        <div class="main-box-body produce-box clearfix">
+                            <div class="header"><b>TỔ MAY</b></div>
+                            <div class="content">{{factoryinfo.TeamCount}}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6" style="padding-left:1.5px;">
+                    <div class="main-box clearfix">
+                        <div class="main-box-body produce-box clearfix">
+                            <div class="header"><b>CÔNG NHÂN</b></div>
+                            <div class="content">{{factoryinfo.TotalNoEmployeeAvailable}} / {{factoryinfo.TotalNoEmployeeDefault}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (Request.IsAuthenticated)
+            {
+                <div class="main-box clearfix">
+                    <header class="main-box-header clearfix"></header>
+                    <div class="main-box-body clearfix">
+                        <span class="info-left">
+                            <a class="btn btn-primary" href="/Goals/FactoryCreate?factoryId={{factoryinfo.FactoryId}}" target="_blank" title="Màn hình nhập của xí nghiệp"><i class="fa fa-pencil"></i> Màn hình nhập xí nghiệp</a>
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+
+       
+        @*<div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <a href="/Factories/details?id={{factoryinfo.FactoryId}}">
+                <div class="main-box-body clearfix">
+                    <img src="~/Content/assets/g1.jpg" />
+                </div>
+            </a>
+        </div>
+
+        <div class="main-box small-xn-box">
+            <a href="/Factories/details?id={{factoryinfo.FactoryId}}">
+                <span class="name">{{factoryinfo.FactoryName}}</span>
+            </a>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body produce-box clearfix">
+                <h1 class="header">THỰC TẾ / MỤC TIÊU</h1>
+                <h1 class="value">{{factoryinfo.TotalQuantityProduct}} / {{factoryinfo.TotalQuantity}}</h1>
+            </div>
+        </div>
+        
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">TIẾN ĐỘ</span>
+                <span class="info-right">{{factoryinfo.PercentProcess}}%</span>
+            </div>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">TỔ MAY</span>
+                <span class="info-right">{{factoryinfo.TeamCount}}</span>
+            </div>
+        </div>
+
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix"></header>
+            <div class="main-box-body clearfix">
+                <span class="info-left">CÔNG NHÂN</span>
+                <span class="info-right">{{factoryinfo.TotalNoEmployee}} / {{factoryinfo.TotalNoEmployeeDefault}}</span>
+            </div>
+        </div>
+
+        @if (Request.IsAuthenticated)
+        {
+            <div class="main-box clearfix">
+                <header class="main-box-header clearfix"></header>
+                <div class="main-box-body clearfix">
+                    <span class="info-left">
+                        <a class="btn btn-primary" href="/Goals/FactoryCreate?factoryId={{factoryinfo.FactoryId}}" target="_blank" title="Màn hình nhập của xí nghiệp"><i class="fa fa-pencil"></i> Màn hình nhập cho xí nghiệp</a>
+                    </span>
+                </div>
+            </div>
+        }*@
+
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <script src="~/Scripts/angular.min.js"></script>
+    <script>
+        
+        Number.prototype.padLeft = function (base, chr) {
+            var len = (String(base || 10).length - String(this).length) + 1;
+            return len > 0 ? new Array(len).join(chr || '0') + this : this;
+        }
+        var app = angular.module("garmentApp", []);
+        app.controller("goalscontroller", function ($scope, $interval, $http) {
+            var update = function () {
+                var now = new Date();
+                var date = [now.getDate().padLeft(),
+                            (now.getMonth() + 1).padLeft(),
+                            now.getFullYear()].join('/');
+                $http.get("/api/Goals/FindAllFactory?date=" + date)
+                .then(function (response) {
+                    $scope.factoriesinfo = response.data;
+                    $scope.today = now.getDate() + '/' + (now.getMonth() + 1).padLeft();
+                });
+            }
+            update();
+            $interval(update, 100000);
+        });
+
+        app.filter('abs', function () {
+            return function (val) {
+                return Math.abs(val);
+            }
+        });
+    </script>
+}

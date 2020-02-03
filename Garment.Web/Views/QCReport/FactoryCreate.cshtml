@@ -1,0 +1,89 @@
+﻿@model Factory
+@{
+    ViewBag.Title = "Nhập QC cho xí nghiệp";
+    //var isAdmin = User.IsInRole("Admin");
+    DateTime currentDate = ViewBag.Date;
+    DateTime beginTabTime = DateTimeExtensions.StartOfWeek(currentDate, DayOfWeek.Monday);
+    DateTime lastTabTime = beginTabTime.AddDays(6);
+}
+
+<div class="row container-div" id="containerinput" ng-app="garmentApp" ng-controller="goalscontroller">
+    <div>
+        <div class="main-box">
+            <div class="main-box-header clearfix">
+                <div class="col-md-5">
+                    <a href="/Factories/details?id=@Model.Id" title="Trở về trang tiến độ @Model.Name">
+                        <i class="fa fa-arrow-left"></i>
+                        <span>Trở về trang tiến độ @Model.Name</span>
+                    </a>
+                </div>
+                <div class="col-md-6">
+                    <h1><b>@Model.Name</b></h1>
+                </div>
+            </div>
+            <div class="main-box-body tabs-wrapper">
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "QCReport", new { factoryId = Model.Id})"><span class="fa fa-home"></span></a>
+                    </li>
+                    <li>
+                        <input type="text" style="opacity:0; width: 0; float: left" name="datepicker" id="datepicker" />
+                        <a href="#" id="btndatepicker">
+                            <span class="fa fa-calendar"></span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("FactoryCreate", "QCReport", new { factoryId = Model.Id, date = currentDate.AddDays(-7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-left"></span></a>
+                    </li>
+                    @for (var date = beginTabTime; date <= lastTabTime; date = date.AddDays(1))
+                    {
+                        <li class="@(date == currentDate?"active":"")@(date > DateTime.Now?" disabled":"")">
+                            <a href="@Url.Action("FactoryCreate", "QCReport", new { factoryId = Model.Id, date = date.ToString("dd/MM/yyyy")})"><b>@date.DayOfWeekVN()</b> @date.ToString("dd/MM")</a>
+                        </li>
+                    }
+                    <li class="@(currentDate.AddDays(7) > DateTime.Now?"disabled":"")">
+                        <a href="@Url.Action("FactoryCreate", "QCReport", new { factoryId = Model.Id, date = currentDate.AddDays(7).ToString("dd/MM/yyyy")})"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </li>
+                </ul>
+              
+
+            </div>
+        </div>
+    </div>
+    <table class="table table-responsive table-hover table-bordered">
+        <tbody>
+            @foreach (var item in Model.Teams)
+            {
+                
+                @Html.Action("_QCReportListForTeam", "QCReport", new { teamId = item.Id, date = currentDate })
+                
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<div class="modal" id="editQCReportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-slg">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+   
+    <link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    
+}
+
+@section Scripts {
+    <script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script>
+        var date = '@currentDate.ToString("dd/MM/yyyy")';
+        var factoryId = '@Model.Id'
+    </script>
+    <script src="~/Scripts/views/qcreport.factorycreate.js"></script>
+}
+

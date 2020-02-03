@@ -1,0 +1,75 @@
+﻿@model List<QCReport>
+@{ 
+    var columnWidth = Model.Count == 0 ? 0: 100 / Model.Count;
+}
+<div class="table" style="height:300px;">
+    @if (Model.Count != 0)
+    { 
+    <div class="tr">
+        @foreach (var qcReport in Model)
+        {
+        var failPercent = qcReport.FailProductCount * 100 / qcReport.ProductCount;
+        var goodPercent = 100 - failPercent;
+        <div class="td" style="width: @columnWidth%">
+            <div class="col-md-6" style="height:300px;">
+                <div style="height: 10%">
+                    @qcReport.QC.Type
+                </div>
+                <div style="height: 90%">
+                    <div style="height: @failPercent%; background-color: red">@failPercent %</div>
+                    <div style="height: @goodPercent%; background-color: green">@goodPercent %</div>
+                </div>
+            </div>
+            <div class="col-md-6" style="height: 300px; vertical-align: bottom; line-height: 300px">
+                <button class="btn btn-default" data-href="/QCReport/_Details?qcId=@qcReport.QCId&teamId=@qcReport.TeamId&date=@qcReport.Date.ToString("dd/MM/yyyy")" data-toggle="modal" data-target="#viewQCReportModal">Xem chi tiết</button>
+            </div>
+        </div>
+        }
+    </div>
+    }
+    else
+    {
+    <h3>Không có QC nào</h3>
+    }
+</div>
+@if (Model.Count != 0)
+{
+<table class="table table-bordered table-responsive">
+    <thead>
+        <tr>
+            <th></th>
+            @foreach (var qcReport in Model)
+            {
+                <th class="text-center">@qcReport.QC.Type</th>
+            }
+        </tr>
+    </thead>
+    <tr>
+        <td>
+            SP Đạt
+        </td>
+        @foreach (var qcReport in Model)
+        {
+            <td>@(qcReport.ProductCount - qcReport.FailProductCount)</td>
+        }
+    </tr>
+    <tr>
+        <td>
+            SP Lỗi
+        </td>
+        @foreach (var qcReport in Model)
+        {
+            <td>@qcReport.FailProductCount</td>
+        }
+    </tr>
+    <tr>
+        <td>
+            SP Kiểm
+        </td>
+        @foreach (var qcReport in Model)
+        {
+            <td>@qcReport.ProductCount</td>
+        }
+    </tr>
+</table>
+}

@@ -1,0 +1,344 @@
+﻿@model Factory
+
+@{
+    ViewBag.Title = "Chỉnh sửa xí nghiệp";
+    string tab = ViewBag.tab;
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="main-box">
+            <div class="tabs-wrapper tabs-no-header">
+                <ul class="nav nav-tabs">
+                    <li @(tab == "info"? "class=active":"")><a href="#tab-info" data-toggle="tab">Thông tin xí nghiệp</a></li>
+                    <li @(tab == "teams"? "class=active":"")><a href="#tab-teams" data-toggle="tab">Danh sách Tổ</a></li>
+                    <li @(tab == "qcs"? "class=active":"")><a href="#tab-qcs" data-toggle="tab">QC</a></li>
+                </ul>
+                <div class="tab-content tab-content-body clearfix">
+                    <div class="tab-pane @(tab == "info"? "fade in active":"")" id="tab-info">
+                        <div class="main-box-body clearfix">
+                            @using (Html.BeginForm("Edit", "Factories", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal", role = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(model => model.Id)
+                                @Html.Partial("_CreateOrEdit", Model)
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fa fa-save"></i>
+                                            Lưu
+                                        </button>
+                                        @Html.ActionLink("Trở về trang quản lý xí nghiệp", "Index")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="tab-pane @(tab == "teams"? "fade in active":"")" id="tab-teams">
+                        <div class="main-box-body clearfix">
+                            <div class="row">
+                                <table class="table table-responsive table-hover" id="manage_video">
+                                    <thead>
+                                        <tr>
+                                            <th><span>Tên</span></th>
+                                            <th><span>Số công nhân</span></th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodytvc" class="sortableteamgroup">
+                                        @foreach (var item in Model.Teams)
+                                        {
+                                            <tr id="item_@item.Id">
+                                                <td>
+                                                    @item.Name
+                                                </td>
+                                                <td>
+                                                    @item.NoEmployee
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <button id="btn-status-@item.Id" class="btn btn-@(item.VisibleStatus == 0?"default": item.VisibleStatus == 1? "success": "danger") dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+                                                            @(item.VisibleStatus == 0 ? "Mặc định" : item.VisibleStatus == 1 ? "Hiện" : "Ẩn")
+                                                            <i class="ace-icon fa fa-angle-down icon-on-right"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="label-default txt-white" href="#" onclick="updateStatus(@item.Id,0)">Mặc định</a>
+                                                            </li>
+
+                                                            <li>
+                                                                <a class="label-success txt-white" href="#" onclick="updateStatus(@item.Id,1)">Hiện</a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="label-danger txt-white" href="#" onclick="updateStatus(@item.Id,2)">Ẩn</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <a href="/Teams/Edit/@item.Id" class="table-link gray" title="Chỉnh sửa">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                    <a href="/Teams/Delete/@item.Id" class="table-link danger" title="Xóa" data-toggle="modal" data-target="#deleteTeamModal"
+                                                       data-ajax="true"
+                                                       data-ajax-complete=""
+                                                       data-ajax-mode="replace"
+                                                       data-ajax-update="#deleteTeamContent">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab-qcs" class="tab-pane @(tab == "qcs"? "fade in active":"")">
+                        <div class="main-box-body clearfix">
+                            <div class="row">
+                                <table class="table table-responsive table-hover">
+                                    <tbody>
+                                    @foreach (var item in Model.Teams)
+                                    {
+                                        <tr>
+                                            <td class="col-md-2">@item.Name</td>
+                                            <td>
+                                                @Html.Action("_QCTeamList", "QCTeam", new { teamId = item.Id})
+                                                <button data-href="/QCTeam/_Create?teamId=@item.Id" data-toggle="modal" data-target="#addQCModal" class="btn btn-default btn-sm">+</button>
+                                                @*@Ajax.ActionLink("+", "_Create", "QCTeam", new { teamId = item.Id }, new AjaxOptions { HttpMethod = "Get", OnComplete = "onShowCreateQC", UpdateTargetId = "addQCModalContent", InsertionMode = InsertionMode.Replace }, new { @class = "btn btn-default btn-sm", data_toggle = "modal" , data_target = "#addQCModal" })*@
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="deleteTeamModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" id="deleteTeamContent">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="addQCModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="qcPreviewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-slg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+@section Styles
+{
+<link href="~/Content/jquery.datetimepicker.css" rel="stylesheet" />
+    <style>
+        .qc-active{
+            background-color: #a5d5ff;
+        }
+    </style>
+}
+@section Scripts
+{
+<script src="~/Scripts/jquery.datetimepicker.js"></script>
+    <script>
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#photoView').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $("#photoinput").change(function () {
+            readURL(this);
+        });
+
+        function OnDeleteSuccess(data) {
+            if (data.success == true) {
+                $("#deleteTeamModal").modal("hide");
+                $("#deleteTeamModal").empty();
+                $("#item_" + data.id).remove();
+            }
+            else {
+                alert(data.error);
+            }
+        }
+        
+        function updateStatus(id, status) {
+            $.ajax({
+                url: "/api/Teams/ChangeVisibleStatus",
+                type: "Post",
+                data: JSON.stringify({ Id: id, Status: status }),
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) { 
+                    var statusText = status == 0 ? "Mặc định" : status == 1 ? "Hiện" : status == 2 ? "Ẩn" : "";
+                    var statusClass = status == 0 ? "btn-default" : status == 1 ? "btn-success" : status == 2 ? "btn-danger" : "";
+                    $("#btn-status-" + id).html(statusText + '<i class="ace-icon fa fa-angle-down icon-on-right"></i>');
+                    $("#btn-status-" + id).removeClass().addClass("btn dropdown-toggle").addClass(statusClass);
+                },
+                error: function () { alert('error'); }
+            });
+            //$.post("/api/Teams/ChangeVisibleStatus", JSON.stringify( { Id: id, Status: status }), function (data) {
+            //    if (data.success == true) {
+            //        var statusText = status == 0 ? "Mặc định" : status == 1 ? "Hiện" : status == 2 ? "Ẩn" : "";
+            //        var statusClass = status == 0 ? "btn-default" : status == 1 ? "btn-success" : status == 2 ? "btn-danger" : "";
+            //        $("#btn-status-" + id).html(statusText + '<i class="ace-icon fa fa-angle-down icon-on-right"></i>');
+            //        $("#btn-status-" + id).removeClass().addClass("btn dropdown-toggle").addClass(statusClass);
+            //    }
+            //})
+        }
+
+
+        //tabs
+
+        function getURLParameter(name) {
+            return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+        }
+
+        function changeUrlParam(param, value) {
+            var currentURL = window.location.href + '&';
+            var change = new RegExp('(' + param + ')=(.*)&', 'g');
+            var newURL = currentURL.replace(change, '$1=' + value + '&');
+
+            if (getURLParameter(param) !== null) {
+                try {
+                    window.history.replaceState('', '', newURL.slice(0, -1));
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                var currURL = window.location.href;
+                if (currURL.indexOf("?") !== -1) {
+                    window.history.replaceState('', '', currentURL.slice(0, -1) + '&' + param + '=' + value);
+                } else {
+                    window.history.replaceState('', '', currentURL.slice(0, -1) + '?' + param + '=' + value);
+                }
+            }
+        }
+
+        $('a[href="#tab-info"]').on('shown.bs.tab', function (e) {
+            changeUrlParam("tab", "info");
+        });
+        $('a[href="#tab-teams"]').on('shown.bs.tab', function (e) {
+            changeUrlParam("tab", "teams");
+        });
+
+        $('a[href="#tab-qcs"]').on('shown.bs.tab', function (e) {
+            changeUrlParam("tab", "qcs");
+        });
+
+        //TAB QC
+        //register event after qc create form shown
+        function onShowCreateQC()
+        {
+            $("#qc-search").keyup(function (e)
+            {
+                var query = $(this).val().toLowerCase();
+                $("#qc-list tr").each( function(index, element){
+                    if(element.innerText.toLowerCase().indexOf(query) == -1)
+                    {
+                        $(element).addClass("hidden");
+                    }
+                    else
+                    {
+                        $(element).removeClass("hidden");
+                    };
+
+                });
+            });
+
+            $('#qc-list').on('click', 'tr', function(event) {
+                $(this).addClass('qc-active').siblings().removeClass('qc-active');
+                $("#QCId").val($(this).data("id"));
+            });
+            $(".datetimepicker").datetimepicker(
+            {
+                format: 'd/m/Y',
+                timepicker: false
+            });
+        }
+        $('#addQCModal, #qcPreviewModal').on('hidden.bs.modal', function (e) {
+            $(this).find('.modal-content').empty();
+        })
+        $('#addQCModal, #qcPreviewModal').on('show.bs.modal', function (e) {
+            $(this).find('.modal-content').load($(e.relatedTarget).data('href'), onShowCreateQC);
+        })
+        function onSuccessCreateEditQCTeam(data)
+        {
+            if (data.success == true) {
+               
+                $('#addQCModal').modal('hide');
+                if (data.applyAll == true) {
+                    $('.qc-team-list').each(function (index, element)
+                    {
+                        var teamId = $(element).data('id');
+                        $.get("/QCTeam/_QCTeamList?teamId=" + teamId, function (partial) {
+                            $("#qcTeamList-" + teamId).replaceWith(partial);
+                            $('button[data-toggle="popover"]').popover();
+                        })
+                    })
+                    
+                }
+                else {
+                    $.get("/QCTeam/_QCTeamList?teamId=" + data.id, function (partial) {
+                        $("#qcTeamList-" + data.id).replaceWith(partial);
+                        $('button[data-toggle="popover"]').popover();
+                    })
+                }
+                
+            }
+            else {
+                alert(data.error);
+            }
+        }
+
+        $('button[data-toggle="popover"]').popover();
+        //$('button[data-toggle="popover"]').on('shown.bs.popover', function () {
+        //    $(this).siblings().on("click", ".btn-editqcteam", function ()
+        //    {
+        //        var teamid = $(this).data("teamid");
+        //        var qcid = $(this).data("qcid");
+        //    });
+        //})
+
+        //Multiple modals overlay
+        $(document).on('show.bs.modal', '.modal', function () {
+            var zIndex = 1040 + (10 * $('.modal:visible').length);
+            $(this).css('z-index', zIndex);
+            setTimeout(function() {
+                $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+            }, 0);
+        });
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            $('.modal:visible').length && $(document.body).addClass('modal-open');
+        });
+
+
+    </script>
+}

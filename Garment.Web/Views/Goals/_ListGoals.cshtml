@@ -1,0 +1,26 @@
+﻿@model Goal
+
+@{
+    //List<Factory> lstFac = (List<Factory>)ViewBag.factories;
+    //IEnumerable<IGrouping<DateTime, Video>> videolistgroups = Model.OrderByDescending(b => b.DisplayTime).GroupBy(b => b.DisplayTime.Date);
+    //var week = ViewData["week"] != null ? Convert.ToInt32(ViewData["week"].ToString()) : 0;
+}
+
+@foreach (Factory f in ViewBag.factories)
+{
+    if (f.Id == Model.Team.FactoryId)
+    {
+        <thead class="theadvideo" id="theadvideo">
+            <tr>
+                <th><h2><b>@f.Name</b></h2></th>
+                <th><span></span></th>
+                <th><span></span></th>
+                <th><span></span></th>
+                <th><span></span></th>
+            </tr>
+        </thead>
+
+    }
+
+}
+

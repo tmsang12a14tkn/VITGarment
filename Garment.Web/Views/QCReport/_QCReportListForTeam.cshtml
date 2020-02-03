@@ -1,0 +1,36 @@
+﻿@model TeamQCReportView
+
+<tr>
+    <td class="col-md-2" rowspan="@(Model.SessionQCReports.Sum(s=>s.ProductQCReports.Count + 1) + 1)">@Model.TeamName</td>
+    @*<td>
+        <span id="qcTeamList-@Model.TeamId" class="qc-team-list" data-id="@Model.TeamId">
+            @foreach (var qcReport in Model)
+            {
+                <button data-toggle="modal" data-target="#editQCReportModal" data-backdrop="static" data-href="/QCReport/_Edit?teamId=@qcReport.TeamId&date=@qcReport.Date.ToString("dd/MM/yyyy")&qcId=@qcReport.QCId" class="btn @(qcReport.IsEmpty? "btn-default": qcReport.InputWrong? "btn-danger":"btn-primary")">
+                    @qcReport.QC.Name
+                </button>
+            }
+        </span>
+    </td>*@
+</tr>
+@foreach(var sessionQCReport in Model.SessionQCReports)
+{
+    <tr>
+        <td rowspan="@(sessionQCReport.ProductQCReports.Count + 1)">Ca @sessionQCReport.SessionOrder</td>
+    </tr>
+    foreach(var productQCReport in sessionQCReport.ProductQCReports)
+    {
+        <tr>
+            <td>@productQCReport.ProductId</td>
+            <td>
+                @foreach (var qcReport in productQCReport.QCReports)
+                {
+                    <button data-toggle="modal" data-target="#editQCReportModal" data-backdrop="static" data-href="/QCReport/_Edit?teamId=@qcReport.TeamId&date=@qcReport.Date.ToString("dd/MM/yyyy")&qcId=@qcReport.QCId" class="btn @(qcReport.IsEmpty? "btn-default": qcReport.InputWrong? "btn-danger":"btn-primary")">
+                        @qcReport.QC.Name
+                    </button>
+                }
+            </td>
+        </tr>
+    }
+}
+

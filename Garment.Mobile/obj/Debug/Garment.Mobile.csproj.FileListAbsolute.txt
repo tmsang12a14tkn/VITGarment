@@ -1,0 +1,6 @@
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\bin\Garment.Mobile.dll.config
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\bin\Garment.Mobile.dll
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\bin\Garment.Mobile.pdb
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\obj\Debug\Garment.Mobile.csprojResolveAssemblyReference.cache
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\obj\Debug\Garment.Mobile.dll
+D:\VITGarment-TFS\VITGarment\Garment.Mobile\obj\Debug\Garment.Mobile.pdb

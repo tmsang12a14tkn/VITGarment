@@ -1,0 +1,153 @@
+﻿.production-timeline {
+        }
+
+        .timeline-header {
+            position: relative;
+            height: 26px;
+        }
+
+            .timeline-header .point {
+                position: absolute;
+                width: 16px;
+                height: 16px;
+                top: 22px;
+                z-index: 12;
+            }
+
+        .quantity-tooltip-text {
+            position: absolute;
+            right: -15px;
+            top: -30px;
+            width: 30px;
+            display: none;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            padding: 2px 0;
+            border-radius: 6px;
+            z-index: 1;
+        }
+
+            .quantity-tooltip-text::after {
+                content: "";
+                position: absolute;
+                top: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: #555 transparent transparent transparent;
+            }
+
+        .single_ruler_piece {
+            color: #a0a0a0;
+            background: url('/Content/assets/schedule_ruler.png') top right no-repeat;
+            text-align: left;
+            padding-left: 2px;
+            padding-top: 0px;
+            line-height: 40px;
+            float: left;
+            width: 10%;
+            position: relative;
+        }
+
+        .time {
+            padding-top: 12px;
+        }
+
+        .point {
+            background-image: url('/Content/assets/move-to-next.png');
+        }
+
+        .hour-piece {
+            position: relative;
+            float: left;
+        }
+
+        .progress {
+            height: 6px;
+        }
+
+        .production-timeline .progress:hover {
+            cursor: pointer;
+        }
+
+        .production-timeline .progress.active {
+            border: 1px solid #ffd800;
+        }
+
+        .progress-bar.selected {
+            background: #4a63c4;
+        }
+
+        .hour-piece .start-time {
+            position: absolute;
+            left: -12px;
+        }
+
+        .hour-piece .end-time {
+            position: absolute;
+            right: -12px;
+        }
+
+        .hour-piece .end-point {
+            position: absolute;
+            top: -2px;
+            right: -5px;
+            width: 10px;
+            height: 10px;
+            background-color: #eeeeee;
+            border-radius: 5px;
+            z-index: 10;
+        }
+
+            .hour-piece .end-point:hover {
+                cursor: pointer;
+            }
+
+            .hour-piece .end-point.active {
+                border: 2px solid #fff;
+                box-shadow: 0 0 0 2px blue;
+            }
+
+        .timeline-body {
+            position: relative;
+            text-align: center;
+            height: 40px;
+            /*margin-left: 10px;
+            margin-right: 10px;*/
+        }
+
+        /*.selected-range
+        {
+            top: 26px;
+            background-color: cornflowerblue;
+            height: 6px;
+            position: absolute;
+            z-index: 10;
+            display: none;
+        }*/
+        .range-difference {
+            position: absolute;
+            z-index: 12;
+            display: none;
+            width: 30px;
+            text-align: center;
+        }
+
+        .list-unstyled .valueproduct {
+            font-size: 30px;
+        }
+
+        .always-show {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .red-border {
+            border: 2px solid #bd2212;
+        }
+
+        .green-border {
+            border: 2px solid #0b9b48;
+        }

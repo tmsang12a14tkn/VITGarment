@@ -1,0 +1,299 @@
+﻿@model List<Factory>
+@{
+    ViewBag.Title = "Biểu đồ";
+    var d = DateTime.Now;
+    var today = d.ToString("dd/MM/yyyy");
+    var startDate = new DateTime(d.Year, d.Month, 1);
+    int year = DateTime.Now.Year;
+    System.Globalization.DateTimeFormatInfo dfi = System.Globalization.DateTimeFormatInfo.CurrentInfo;
+    System.Globalization.Calendar cal = dfi.Calendar;
+    int num = cal.GetWeekOfYear(new DateTime(2016, 1, 1), dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+}
+<div ng-app="analyticsApp" ng-controller="ChartController" class="main-box">
+    <div class="main-box-header">
+        <h1>Báo cáo tổng quát theo {{timeRangeValues[timeRange]}}</h1>
+    </div>
+    <div class="main-box-body">
+        <h2>Từ {{from}} - {{to}}</h2>
+        
+        <div class="filter-block">
+            <div class="form-group col-md-4 pull-left">
+                <div class="btn-group">
+                    <button type="button" id="selectDate" class="btn btn-primary dropdown-toggle active" data-toggle="dropdown" aria-expanded="false">
+                        Chọn lựa <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a id="btnday" data-value="day">Theo Ngày</a></li>
+                        <li><a id="btnweek" data-value="week">Theo Tuần</a></li>
+                        <li><a id="btnmonth" data-value="month">Theo Tháng</a></li>
+                        <li><a id="btnquarter" data-value="quarter">Theo Quý</a></li>
+                        <li><a id="btnyear" data-value="year">Theo Năm</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="form-group col-md-3 pull-right">
+                <input type="text" class="form-control" name="daterange" id="daterange" />
+            </div>
+
+            <div class="form-group pull-right">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Tuần" data-toggle="dropdown" aria-expanded="false">
+                        Tuần <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" role="menu" id="week" style="height:150px; overflow: auto">
+                        <div id="wrapperDivWeek" class="dropdownchild">
+
+                            @for (int i = 0; i < 10; i++)
+                        {
+                            //--Tuần tính từ T7 tuần trước đển T6 tuần hiện tại--//
+                            var currDay = d.DayOfWeek;
+                            DateTime prevSat = DateTime.Now;
+                            //cn
+                            if (currDay == 0)
+                            {
+                                prevSat = d.AddDays(-6);
+                            }
+                            else
+                            {
+                                int delta = DayOfWeek.Monday - d.DayOfWeek;
+                                prevSat = d.AddDays(delta);
+                            }
+                            var beginWeek = prevSat.ToString("dd/MM/yyyy");
+                            var endWeek = prevSat.AddDays(6).ToString("dd/MM/yyyy");
+                            d = prevSat.AddDays(-1);
+                            int numweek = 0;
+                            if (DateTime.Now.Year == prevSat.Year)
+                            {
+                                numweek = cal.GetWeekOfYear(prevSat.AddDays(-1), dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                            }
+                            else
+                            {
+                                numweek = cal.GetWeekOfYear(prevSat, dfi.CalendarWeekRule, dfi.FirstDayOfWeek);
+                            }
+
+                                <p data-date="@d.AddDays(+1)"><a href="#" class="selectpicker" data-display="Tuần @numweek / @prevSat.Year" data-start="@beginWeek" data-end="@endWeek" data-my="@prevSat.AddDays(6)" range-select>Tuần từ @beginWeek - @endWeek ( @numweek )</a></p>
+                        }
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle selectparent" id="initMonth" data-default="Tháng" data-toggle="dropdown" aria-expanded="false">
+                        Tháng <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" role="menu" id="month" style="height:150px; overflow: auto">
+                        <div id="wrapperDivMonth" class="dropdownchild">
+                            @{
+                            d = DateTime.Now;
+                            }
+                            @for (int i = 0; i < 10; i++)
+                        {
+                            var month = d.AddMonths(i * -1);
+                            var dateTemp = new DateTime(month.Year, month.Month, 1);
+                            var firstDayOfMonth = dateTemp.ToString("dd/MM/yyyy");
+                            var lastDayOfMonth = dateTemp.AddMonths(1).AddDays(-1).ToString("dd/MM/yyyy");
+                                <p data-date="@dateTemp.AddMonths(-1)"><a href="#" class="selectpicker" data-display="@month.Month / @month.Year" data-start="@firstDayOfMonth" data-end="@lastDayOfMonth">@month.Month / @month.Year</a></p>
+                        }
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Quý" data-toggle="dropdown" aria-expanded="false">
+                        Quý <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" role="menu" id="quarter" style="height:100px; overflow: auto">
+                        <div id="wrapperDivQuarter" class="dropdownchild">
+                            @{
+                            DateTime dateQuarter = DateTime.Now;
+    //DateTime d = (d.Month - 1) / 3 + 1;
+                            }
+                            @for (int i = 0; i < 4; i++)
+                        {
+                            int quarter = (dateQuarter.Month - 1) / 3 + 1;
+                            Tuple<DateTime, DateTime> date = Extensions.SetLastQuarterDates(quarter, dateQuarter.Year);
+                                <p data-date="@date.Item1.ToString("dd/MM/yyyy")"><a href="#" class="selectpicker" data-display="Quý @quarter / @dateQuarter.Year" data-start="@date.Item1.ToString("dd/MM/yyyy")" data-end="@date.Item2.ToString("dd/MM/yyyy")">Quý @quarter / @dateQuarter.Year</a></p>
+                            dateQuarter = dateQuarter.AddMonths(-3);
+                        }
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle selectparent" data-default="Năm" data-toggle="dropdown" aria-expanded="false">
+                        Năm <span class="caret"></span>
+                    </button>
+                    <div class="dropdown-menu" role="menu" id="year" style="height:150px; overflow: auto">
+                        <div id="wrapperDivYear" class="dropdownchild">
+                            @{
+                            d = DateTime.Now;
+                            }
+                            @for (int i = 0; i < 10; i++)
+                        {
+                            var yr = d.AddYears(i * -1);
+                            var dateTemp = new DateTime(yr.Year, 1, 1);
+                            var firstDayOfYear = dateTemp.ToString("dd/MM/yyyy");
+                            var lastDayOfYear = dateTemp.AddYears(1).AddDays(-1).ToString("dd/MM/yyyy");
+                                <p data-date="@firstDayOfYear"><a href="#" class="selectpicker" data-display="@yr.Year" data-start="@firstDayOfYear" data-end="@lastDayOfYear">@yr.Year</a></p>
+                        }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div id="chart" class="col-md-9"></div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-12 checkbox-nice">
+                        <input type="checkbox" id="cbToggleMarker" />
+                        <label for="cbToggleMarker">Hiển thị điểm</label>
+                    </div>
+
+
+                    @*<input type="radio" name="radiocharttype" value="column" >Column
+                        <input type="radio" name="radiocharttype" value="line">Line
+                        <input type="radio" name="radiocharttype" value="spline" checked>Spline*@
+                    <div class="col-md-12">
+                        <div class="btn-group" data-toggle="buttons">
+                            <label class="btn btn-primary">
+                                <input type="radio" name="radiocharttype" value="column">
+                                <img src="~/Content/Images/bieudo-03.png" />
+                            </label>
+                            <label class="btn btn-primary">
+                                <input type="radio" name="radiocharttype" value="line">
+                                <img src="~/Content/Images/bieudo-01.png" />
+                            </label>
+                            <label class="btn btn-primary active">
+                                <input type="radio" name="radiocharttype" value="spline" checked>
+                                <img src="~/Content/Images/bieudo-02.png" />
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+               
+            </div>
+        </div>
+
+        <ul class="list-unstyled">
+            @foreach (var factory in Model)
+        {
+                <li class="">
+                    <div class="row">
+                        <div class="col-md-2">
+                            @*<input type="checkbox" id="cb_cattype_@(catType.Id==0?"null":catType.Id.ToString())" data-id="@(catType.Id==0?"null":catType.Id.ToString())" class="cb_cattype" />*@
+                            <span class="highcharts-legend-item toggle-team" data-checked=false data-id="factory_@factory.Id">@factory.Name</span>
+                        </div>
+                        <div class="col-md-10">
+                            @foreach (var team in factory.Teams)
+                        {
+                                <span class="highcharts-legend-item toggle-team" data-id="@team.Id" data-checked=false data-factoryid="@(team.FactoryId == null ? "null" : team.FactoryId.ToString())">| @team.Name</span>
+                        }
+                        </div>
+                    </div>
+
+                </li>
+        }
+        </ul>
+
+        <table id="team-table" class="table table-responsive table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Tổ</th>
+                    <th>Mục tiêu</th>
+                    <th>Thực tế</th>
+                    <th>Lệch</th>
+                    <th>Số ngày</th>
+                    <th>Số sản phẩm</th>
+                </tr>
+            </thead>
+            <tbody ng-repeat="factory in factories">
+                <tr data-toggle="popover" team="factory" popover>
+                    <td>{{factory.Name}}</td>
+                    <td></td>
+                    <td>{{factory.Quantity | number}}</td>
+                    <td>{{factory.ProduceQuantity | number}}</td>
+                    <td ng-class="factory.ProduceQuantity >= factory.Quantity? 'green':'red'">{{factory.ProduceQuantity - factory.Quantity | number}}</td>
+                    <td>{{factory.NoDay}}</td>
+                    <td>{{factory.Products.length}}</td>
+                </tr>
+                <tr ng-repeat="team in factory.Teams" data-toggle="popover" team="team" popover>
+                    <td></td>
+                    <td>{{team.Name}}</td>
+                    <td>{{team.Quantity | number}}</td>
+                    <td>{{team.ProduceQuantity | number}}</td>
+                    <td ng-class="team.ProduceQuantity >= team.Quantity? 'green':'red'">{{team.ProduceQuantity - team.Quantity | number}}</td>
+                    <td>{{team.NoDay}}</td>
+                    <td>{{team.Products.length}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="myModal" class="modal fade" role="dialog" data-hidden="true" data-backdrop="static"
+         data-keyboard="false">
+        <div class="modal-dialog" id="mymodal" style="position:relative">
+            <div id="circularG">
+                <div id="circularG_1" class="circularG"></div>
+                <div id="circularG_2" class="circularG"></div>
+                <div id="circularG_3" class="circularG"></div>
+                <div id="circularG_4" class="circularG"></div>
+                <div id="circularG_5" class="circularG"></div>
+                <div id="circularG_6" class="circularG"></div>
+                <div id="circularG_7" class="circularG"></div>
+                <div id="circularG_8" class="circularG"></div>
+            </div>
+        </div>
+    </div>
+    <div id="pointModal" class="modal fade" role="dialog" data-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Chi tiết - {{point.Date}}</h4>
+                </div>
+                <div class="modal-body">
+                    Tổng số sản phẩm: {{point.ProduceQuantity}}
+                    <ul>
+                        <li ng-repeat="product in point.Products"><strong>{{product.ProductId}}</strong> : {{product.ProduceQuantity}}</li>
+                    </ul>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+</div>
+
+
+@section Styles{
+    <style>
+        .toggle-team
+        {
+            cursor: pointer;
+        }
+        .toggle-team[data-checked=true] {
+            font-weight: bold
+        }
+    </style>
+    <link href="~/Content/daterangepicker.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/views/analytics.chart.css" rel="stylesheet" />
+}
+@section Scripts
+{
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/daterangepicker.js"></script>
+    <script src="~/Scripts/highcharts/highcharts.js"></script>
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/views/analytics.chart.js"></script>
+}

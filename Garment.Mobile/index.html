@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+
+
+    <link href="css/onsenui.css" rel="stylesheet" />
+    <link href="css/onsen-css-components.css" rel="stylesheet" />
+    <link href="css/index.css" rel="stylesheet" />
+    <link href="css/datepicker/default.css" rel="stylesheet" />
+    <link href="css/datepicker/default.date.css" rel="stylesheet" />
+    <link href="css/datepicker/default.time.css" rel="stylesheet" />
+
+    <script src="js/onsenui_all.min.js"></script>
+    <script src="js/angular.easypiechart.js"></script>
+    <script src="js/highcharts.src.js"></script>
+    <script src="js/angular-datepicker.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/AppController.js"></script>
+    <script src="js/FactoryDetailsController.js"></script>
+    <script src="js/TeamDetailsController.js"></script>
+    <script src="js/TeamErrorChartController.js"></script>
+    <script src="js/TeamErrorChart2Controller.js"></script>
+    <script src="js/TeamEmployeeChartController.js"></script>
+    <script src="js/TeamHourDetailsController.js"></script>
+
+    <title>VITGarment</title>
+</head>
+
+<body>
+    <ons-navigator var="myNavigator" page="allfactories.html">
+        
+    </ons-navigator>
+    
+    <ons-template id="allfactories.html">
+        <ons-page ng-controller="MainScreenController" ng-init="loadData()">
+            <ons-toolbar><div class="center">VIT GARMENT</div></ons-toolbar>
+
+            <div class="navigation-bar sub-nav">
+                <div class="navigation-bar__left"><ons-toolbar-button ng-click="goToDate(-1)"><ons-icon icon="ion-chevron-left" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+                <div class="navigation-bar__center">
+                    <input type="text" pick-a-date="date" pick-a-date-options="datePickerOptions" style="opacity:0; width: 0" name="datepicker" id="teamdatepicker">
+                    <label for="teamdatepicker">
+                        {{dayOfWeek}} - {{currentDate}}
+                        <ons-toolbar-button><ons-icon icon="ion-android-calendar" style="color: #808285; font-size: 22px;" fixed-width="false"></ons-icon></ons-toolbar-button>
+                    </label>
+                </div>
+                <div class="navigation-bar__right" ng-if="!isToday()"><ons-toolbar-button ng-click="goToDate(1)"><ons-icon icon="ion-chevron-right" style="color: #808285; font-size: 18px;" fixed-width="false"></ons-icon></ons-toolbar-button></div>
+            </div>
+
+            <ons-list>
+                <ons-list-item ng-repeat="factory in factories" class="list-item-container">
+                    <ons-row ng-click="goToFactoryDetails(factory.FactoryId)">
+                        <div style="width: 120px">
+                            <div class="name bg-{{factory.Color}}">
+                                {{factory.FactoryName}}
+                            </div>
+                            <div class="project-box-content">
+                                <div class="chart" style="margin: 0 10px;" ng-class="factory.Color" percent="factory.PercentProcess" options="factory.pieChartOptions" easypiechart>
+                                    <div class="content-wrapper">
+                                        <div class="content-middle">
+                                            <span class="percent">{{factory.PercentProcess}}</span>%<br />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-left: 10px;" class="col">
+                            <ons-row class="sub-row">
+                                <ons-col width="75px">Tiến độ</ons-col>
+                                <ons-col class="red">{{factory.TotalQuantity - factory.TotalQuantityProduct}}</ons-col>
+                                <ons-col class="green">{{factory.TotalQuantityProduct}}</ons-col>
+                                <ons-col>{{factory.TotalQuantity}}</ons-col>
+                            </ons-row>
+                            <ons-row class="sub-row">
+                                <ons-col width="75px">Tổ may</ons-col>
+                                <ons-col class="red">{{factory.TeamCount - factory.GoodTeamCount}}</ons-col>
+                                <ons-col class="green">{{factory.GoodTeamCount}}</ons-col>
+                                <ons-col>{{factory.TeamCount}}</ons-col>
+                            </ons-row>
+                            <ons-row class="sub-row">
+                                <ons-col width="75px">Công nhân</ons-col>
+                                <ons-col class="red">{{factory.TotalNoEmployeeDefault - factory.TotalNoEmployeeAvailable}}</ons-col>
+                                <ons-col class="green">{{factory.TotalNoEmployeeAvailable}}</ons-col>
+                                <ons-col>{{factory.TotalNoEmployeeDefault}}</ons-col>
+                            </ons-row>
+                            <ons-row class="sub-row remain-time">
+                                <ons-col width="105px">Thời gian còn</ons-col>
+                                <ons-col>{{factory.TeamDetails[0].TimeLeft}}</ons-col>
+                                <ons-col></ons-col>
+                                <ons-col></ons-col>
+                            </ons-row>
+                            <!--<div class="location">
+                                {{factory.TotalQuantityProduct}}/
+                            </div>-->
+                            <!--<div class="desc">
+                                Tiến độ: {{factory.PercentProcess}} %
+                            </div>-->
+                            <!--<div>
+                                Tổ may: {{factory.TeamCount}}
+                            </div>-->
+                        </div>
+                    </ons-row>
+                </ons-list-item>
+            </ons-list>
+            <ons-bottom-toolbar><div class="navigation-bar__title navigation-bar__center">Menu</div></ons-bottom-toolbar>
+        
+        </ons-page>
+    </ons-template>
+    
+    <!--<script type="text/javascript" src="cordova.js"></script>-->
+    <!--<script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>-->
+</body>
+
+</html>

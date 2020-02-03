@@ -1,0 +1,57 @@
+﻿@model IEnumerable<Goal>
+@{
+    ViewBag.Title = "Quản trị " + (string)ViewBag.TeamName;
+}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="main-box clearfix">
+            <header class="main-box-header clearfix">
+                <h2 class="pull-left"><b>Quản trị @ViewBag.TeamName</b></h2>
+            </header>
+            <div class="main-box-body clearfix">
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table user-list table-hover" id="manage_video">
+                            <thead>
+                                <tr>
+                                    <th>Ngày</th>
+                                    <th>Mục tiêu</th>
+                                    <th>Đạt được</th>
+                                    <th>Người tạo</th>
+                                    <th>Thời gian tạo</th>
+                                    <th>Sửa lần cuối</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodytvc">
+                                @foreach (var goal in Model)
+                                {
+                                    <tr>
+                                        <td>@goal.GoalDate.ToShortDateString()</td>
+                                        <td>@goal.Quantity</td>
+                                        <td>@goal.ProduceQuantity</td>
+                                        <td>@(goal.CreateUser != null ? goal.CreateUser.UserName : "")</td>
+                                        <td>@goal.CreateTime</td>
+                                        <td>@goal.LastestUpdateTime</td>
+                                        <td>
+                                            <a href="@Url.Action("Create", "Goals", new { teamId = goal.TeamId, date = goal.GoalDate.ToString("dd/MM/yyyy")})" target="_blank" class="table-link gray" title="Chỉnh sửa">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

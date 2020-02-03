@@ -1,0 +1,239 @@
+﻿@model QCReport
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">@Model.QC.Name</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-4">
+            <button class="btn btn-default">@Model.QC.Type</button>
+        </div>
+        <div class="col-md-4 text-center"><strong>Ngày @Model.Date.Day tháng @Model.Date.Month năm @Model.Date.Year</strong></div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="ManagementCode" class="col-md-4 text-right">Mã quản lý</label>
+                <div class="col-md-8">@Html.TextBoxFor(model => model.ManagementCode, new { @class = "form-control" })</div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Chuyền số</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" disabled value="@Model.Team.Name" />
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo tài liệu</div>
+                <div class="col-md-8">
+                    @*<input type="checkbox" class="disabled" />*@
+                    @Html.CheckBoxFor(modal => modal.AccordingDocument)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Mã hàng</div>
+                <div class="col-md-8">
+                    @*<input type="text" class="form-control disabled" />*@
+                    @Html.TextBoxFor(model => model.ProductId, new { @class = "form-control" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo bảng màu</div>
+                <div class="col-md-8">
+                    @Html.CheckBoxFor(modal => modal.AccordingColorTable)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Màu</div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Color, new { @class = "form-control" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Theo COMMENT</div>
+                <div class="col-md-8">
+                    @Html.CheckBoxFor(modal => modal.AccordingComment)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">SL Kiểm</div>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.ProductCount, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Số SP Đạt</div>
+                <div class="col-md-8">
+                    <input type="number" class="form-control" value="@(Model.ProductCount - Model.FailCheckCount)" id="GoodProductCount" disabled />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">SL Lỗi</div>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.FailCheckCount, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-3">Số SP Lỗi</div>
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.FailProductCount, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group row">
+                <div class="col-md-2">Tỉ lệ % Lỗi</div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control" id="PercentFail" value="@(Model.ProductCount!=0? Model.FailProductCount *100/ Model.ProductCount:0)%" disabled />
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <table class="table table-bordered" id="table-error">
+        <thead>
+            <tr>
+                <th>Vị trí lỗi</th>
+                <th>Số lỗi</th>
+                <th>SP lỗi</th>
+                <th>SP sửa</th>
+                <th>Nguyên nhân</th>
+                <th>Cách khắc phục</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Errors != null)
+            {
+                for (int i = 0; i < Model.Errors.Count; i++)
+                {
+                    var error = Model.Errors.ElementAt(i);
+                    <tr id="error-@i">
+                        <td>
+                            @*@Html.EditorFor(m => m.Errors.ElementAt(0).ErrorPosition)*@
+                            <input class="form-control" type="text" name="Errors[@i].ErrorPosition" value="@error.ErrorPosition" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" name="Errors[@i].FailCheckCount" value="@error.FailCheckCount" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" name="Errors[@i].FailProductCount" value="@error.FailProductCount" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="number" name="Errors[@i].FixedProductCount" value="@error.FixedProductCount" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" name="Errors[@i].Reason" value="@error.Reason" />
+                        </td>
+                        <td>
+                            <input class="form-control" type="text" name="Errors[@i].FixMethod" value="@error.FixMethod" />
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+  
+    <table class="table table-bordered" id="table-spec">
+        <thead>
+            <tr>
+                <th>Cỡ</th>
+                <th>Chi tiết</th>
+                <th>TSKT</th>
+                <th>Dung sai</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+            
+            @if (Model.Specifications != null)
+            {
+                for (int i = 0; i < Model.Specifications.Count; i++)
+                {
+                    var spec = Model.Specifications.ElementAt(i);
+                    var detailCount = Math.Max(spec.QCSpecDetails.Count, 1);
+                    <tbody id="spec-@i">
+                        <tr id="spec-@i-0">
+
+                            <td class="spanable" rowspan="@Math.Max(spec.QCSpecDetails.Count,1)?"><input class="form-control" type="text" name="Specifications[@i].Size" value="@spec.Size" /></td>
+                            <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[0].Element" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Element:"")" /></td>
+                            <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[0].Specification" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Specification:"")" /></td>
+                            <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[0].Tolerance" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Tolerance:"")" /></td>
+                            <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[0].Parameter1" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter1:0)" /></td>
+                            <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[0].Parameter2" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter2:0)" /></td>
+                            <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[0].Parameter3" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter3:0)" /></td>
+                            <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[0].Parameter4" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter4:0)" /></td>
+                            <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[0].Parameter5" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter5:0)" /></td>
+                            <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[0].Parameter6" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Parameter6:"")" /></td>
+                            <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[0].Note" value="@(spec.QCSpecDetails.Count > 0 ? spec.QCSpecDetails.ElementAt(0).Note:"")" /></td>
+                          
+                        </tr>
+                        @for (int j = 1; j < spec.QCSpecDetails.Count; j++)
+                        {
+                            var specDetail = spec.QCSpecDetails.ElementAt(j);
+                            <tr id="spec-@i-@j">
+                                <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[@j].Element" value="@specDetail.Element" /></td>
+                                <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[@j].Specification" value="@specDetail.Specification" /></td>
+                                <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[@j].Tolerance" value="@specDetail.Tolerance" /></td>
+                                <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[@j].Parameter1" value="@specDetail.Parameter1" /></td>
+                                <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[@j].Parameter2" value="@specDetail.Parameter2" /></td>
+                                <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[@j].Parameter3" value="@specDetail.Parameter3" /></td>
+                                <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[@j].Parameter4" value="@specDetail.Parameter4" /></td>
+                                <td><input class="form-control" type="number" name="Specifications[@i].QCSpecDetails[@j].Parameter5" value="@specDetail.Parameter5" /></td>
+                                <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[@j].Parameter6" value="@specDetail.Parameter6" /></td>
+                                <td><input class="form-control" type="text" name="Specifications[@i].QCSpecDetails[@j].Note" value="@specDetail.Note" /></td>
+                            </tr>
+
+                        }
+                    </tbody>
+                }
+            }
+       
+    </table>
+   
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+</div>
